@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>CMMS Maintenance – Prasad Seeds Indonesia</title>
+<style>
+/*──────────────────────────────────────────
+  TOKENS — Prasad Seeds Brand Colors
+  Green: #4CAF50 (logo leaf green)
+  Navy:  #1E3A6E (logo navy blue)
+  Warm white bg
+──────────────────────────────────────────*/
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --green:#4CAF50;
+  --green-dark:#2e7d32;
+  --green-light:#81c784;
+  --navy:#1E3A6E;
+  --navy-light:#2d56a3;
+  --navy-dark:#0f2244;
+  --warm-white:#fdf8f0;
+  --warm-cream:#f5efe3;
+  --warm-tan:#e8dcc8;
+  --harvest-gold:#d4a017;
+  --harvest-amber:#e07b00;
+  --surface:rgba(255,255,255,0.82);
+  --border:rgba(46,125,50,0.18);
+  --text-dark:#1a2e1a;
+  --text-mid:#3d5c3d;
+  --text-light:#6b8c6b;
+}
+html,body{width:100%;height:100%;font-family:'Georgia',serif;background:var(--warm-white);overflow:hidden;}
+
+/*──────────────────────────────────────────
+  WARM BACKGROUND TEXTURE
+──────────────────────────────────────────*/
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 10%, rgba(212,160,23,.09) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 80%, rgba(76,175,80,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 40% at 50% 50%, rgba(30,58,110,.04) 0%, transparent 70%);
+}
+
+/*──────────────────────────────────────────
+  SHARED KEYFRAMES
+──────────────────────────────────────────*/
+@keyframes spin    {to{transform:rotate(360deg)}}
+@keyframes spinR   {to{transform:rotate(-360deg)}}
+@keyframes blink   {0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes sway    {0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes wIn     {from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wOut    {from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.04)}}
+@keyframes popIn   {from{opacity:0;transform:scale(.76) translateY(28px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes bgIn    {from{opacity:0}to{opacity:1}}
+@keyframes bgOut   {from{opacity:1}to{opacity:0}}
+@keyframes hIn     {from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardIn  {0%{opacity:0;transform:translateY(36px) scale(.94)}60%{opacity:1;transform:translateY(-3px) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fadeUp  {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer {0%{background-position:0%}100%{background-position:300%}}
+@keyframes tapPulse{0%{transform:scale(1)}50%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes growBar {to{width:100%}}
+@keyframes cornJiggle{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.08)}}
+@keyframes leafFall{
+  0%  {transform:translateY(-60px) rotate(0deg) translateX(0);opacity:0;}
+  5%  {opacity:1;}
+  20% {transform:translateY(20vh)  rotate(45deg)  translateX(30px);}
+  40% {transform:translateY(40vh)  rotate(90deg)  translateX(-20px);}
+  60% {transform:translateY(60vh)  rotate(150deg) translateX(25px);}
+  80% {transform:translateY(80vh)  rotate(200deg) translateX(-15px);}
+  95% {opacity:.7;}
+  100%{transform:translateY(110vh) rotate(270deg) translateX(10px);opacity:0;}
+}
+@keyframes leafSway{
+  0%,100%{margin-left:0px}
+  50%{margin-left:18px}
+}
+@keyframes goldenShimmer{
+  0%,100%{box-shadow:0 0 0 0 rgba(212,160,23,0);}
+  50%{box-shadow:0 0 16px 2px rgba(212,160,23,.25);}
+}
+@keyframes pulseRing{
+  0%{transform:scale(1);opacity:.5}
+  100%{transform:scale(1.5);opacity:0}
+}
+@keyframes sunrise{
+  0%{transform:translateY(12px);opacity:0}
+  100%{transform:translateY(0);opacity:1}
+}
+
+/*──────────────────────────────────────────
+  FALLING LEAVES CANVAS
+──────────────────────────────────────────*/
+#leaf-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
+
+/*──────────────────────────────────────────
+  TOP BAR
+──────────────────────────────────────────*/
+.top-bar{
+  position:fixed;top:0;left:0;right:0;height:58px;
+  background:rgba(30,58,110,.96);
+  border-bottom:2px solid var(--green);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;z-index:500;
+  box-shadow:0 2px 18px rgba(30,58,110,.3);
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.logo-circle{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green) 50%,var(--navy-dark) 50%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;
+  border:2px solid rgba(255,255,255,.25);
+  flex-shrink:0;overflow:hidden;position:relative;
+}
+.logo-circle-inner{
+  font-size:13px;font-weight:800;color:#fff;letter-spacing:.5px;z-index:1;
+}
+.brand-text{font-size:13px;font-weight:700;color:rgba(255,255,255,.92);font-family:'Georgia',serif;}
+.brand-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px;font-family:sans-serif;}
+.top-right{display:flex;align-items:center;gap:18px;}
+.status-dot{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--green-light);letter-spacing:.8px;font-family:sans-serif;}
+.status-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green-light);box-shadow:0 0 6px var(--green);animation:blink 2s ease infinite;}
+.clock{font-size:11px;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums;white-space:nowrap;font-family:sans-serif;}
+
+/*──────────────────────────────────────────
+  LOADING SCREEN (corn loading bar)
+──────────────────────────────────────────*/
+#loading-screen{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;text-align:center;padding:24px;
+  background:var(--warm-white);
+  animation:wIn .6s ease forwards;
+}
+.loading-logo-wrap{
+  width:88px;height:88px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green) 50%,var(--navy) 50%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px rgba(30,58,110,.2), 0 0 0 6px rgba(76,175,80,.12);
+  animation:goldenShimmer 2s ease infinite;
+  position:relative;
+}
+.loading-logo-wrap::before{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:2px solid transparent;border-top-color:var(--green);border-right-color:var(--green);
+  animation:spin 2s linear infinite;
+}
+.loading-logo-text{font-size:28px;font-weight:900;color:#fff;letter-spacing:1px;}
+.loading-title{
+  font-size:clamp(18px,4vw,28px);font-weight:700;
+  color:var(--navy);line-height:1.25;
+  font-family:'Georgia',serif;
+}
+.loading-title .green-glow{
+  background:linear-gradient(90deg,var(--green-dark),var(--green),var(--harvest-gold),var(--green));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:300%;animation:shimmer 3s linear infinite;
+}
+.loading-sub{font-size:11px;color:var(--text-light);letter-spacing:1.2px;font-family:sans-serif;}
+
+/* CORN LOADING BAR */
+.corn-bar-wrap{
+  width:min(280px,80vw);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.corn-bar-label{font-size:10px;color:var(--text-light);letter-spacing:1px;font-family:sans-serif;}
+.corn-track{
+  width:100%;height:28px;
+  background:rgba(30,58,110,.07);
+  border:1.5px solid rgba(30,58,110,.18);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+}
+.corn-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--green-dark),var(--harvest-gold),var(--harvest-amber));
+  border-radius:14px;
+  animation:growBar 3.8s cubic-bezier(.4,0,.6,1) forwards;
+  display:flex;align-items:center;justify-content:flex-end;
+  padding-right:4px;
+  position:relative;overflow:hidden;
+}
+.corn-fill::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    90deg,
+    transparent 0px,transparent 10px,
+    rgba(255,255,255,.15) 10px,rgba(255,255,255,.15) 12px
+  );
+}
+/* tiny corn kernels pattern on fill */
+.corn-kernels{
+  display:flex;gap:3px;position:absolute;inset:0;align-items:center;padding:3px 6px;overflow:hidden;
+}
+.corn-kernel{
+  width:7px;height:9px;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+  background:linear-gradient(180deg,#f5d060,#d4a017);
+  border:1px solid rgba(180,120,0,.3);
+  flex-shrink:0;animation:cornJiggle 1.2s ease infinite;
+}
+.corn-kernel:nth-child(2n){animation-delay:.2s;}
+.corn-kernel:nth-child(3n){animation-delay:.4s;background:linear-gradient(180deg,#ffe082,#f5a623);}
+.corn-pct{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  font-size:10px;font-weight:700;color:rgba(255,255,255,.9);
+  font-family:sans-serif;letter-spacing:.5px;
+  text-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.loading-hint{font-size:10px;color:var(--text-light);letter-spacing:.5px;font-family:sans-serif;animation:blink 2.5s ease infinite;}
+
+/*──────────────────────────────────────────
+  WELCOME SCREEN
+──────────────────────────────────────────*/
+#welcome-screen{
+  position:fixed;inset:0;z-index:50;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;text-align:center;padding:24px;
+  background:var(--warm-white);
+}
+.w-ring{
+  width:96px;height:96px;border-radius:50%;
+  border:1px solid rgba(76,175,80,.2);
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.w-ring::before{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:2px solid transparent;border-top-color:var(--green);border-right-color:var(--green);
+  animation:spin 2.4s linear infinite;
+}
+.w-ring::after{
+  content:'';position:absolute;inset:-16px;border-radius:50%;
+  border:1.5px solid transparent;border-bottom-color:var(--navy-light);
+  animation:spinR 3.5s linear infinite;
+}
+.w-ring-inner{
+  width:62px;height:62px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green) 50%,var(--navy) 50%);
+  border:2px solid rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:900;color:#fff;letter-spacing:.5px;
+}
+.w-badge{
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--green-dark);border:1.5px solid rgba(76,175,80,.3);
+  padding:5px 18px;border-radius:3px;
+  background:rgba(76,175,80,.06);
+  font-family:sans-serif;
+}
+.w-title{
+  font-size:clamp(20px,4.5vw,44px);font-weight:700;
+  color:var(--navy);line-height:1.2;max-width:680px;
+  font-family:'Georgia',serif;
+}
+.w-title .harvest-glow{
+  background:linear-gradient(90deg,var(--green-dark),var(--green),var(--harvest-gold),var(--green-dark));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:300%;animation:shimmer 3.5s linear infinite;
+}
+.w-sub{font-size:11px;color:var(--text-light);letter-spacing:1.2px;font-family:sans-serif;}
+.w-progress-wrap{width:220px;height:3px;background:rgba(30,58,110,.08);border-radius:3px;overflow:hidden;}
+.w-progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--green-dark),var(--harvest-gold));
+  width:0;animation:growBar 5s linear forwards;
+}
+.w-hint{font-size:10px;color:var(--text-light);letter-spacing:.5px;font-family:sans-serif;}
+
+/*──────────────────────────────────────────
+  DEV POPUP — warm harvest theme
+──────────────────────────────────────────*/
+#dev-popup{
+  display:none;position:fixed;inset:0;z-index:300;
+  align-items:center;justify-content:center;
+  background:rgba(30,58,110,.55);backdrop-filter:blur(8px);
+}
+#dev-popup.show{display:flex;animation:bgIn .3s ease forwards;}
+.dev-card{
+  background:linear-gradient(160deg,#fff 0%,var(--warm-cream) 100%);
+  border:1.5px solid rgba(76,175,80,.3);
+  border-radius:20px;
+  padding:28px 32px 22px;
+  max-width:350px;width:88%;text-align:center;
+  position:relative;
+  box-shadow:0 16px 56px rgba(30,58,110,.2), 0 2px 12px rgba(76,175,80,.1);
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.dev-card::before{content:'';position:absolute;top:10px;left:10px;width:16px;height:16px;border-top:2px solid var(--green);border-left:2px solid var(--green);border-radius:2px;}
+.dev-card::after {content:'';position:absolute;bottom:10px;right:10px;width:16px;height:16px;border-bottom:2px solid var(--green);border-right:2px solid var(--green);border-radius:2px;}
+/* harvest leaf deco top */
+.dev-leaf-deco{position:absolute;top:-10px;right:24px;font-size:22px;transform:rotate(20deg);}
+.dev-icon-wrap{
+  width:64px;height:64px;margin:0 auto 12px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green) 50%,var(--navy) 50%);
+  border:3px solid rgba(255,255,255,.8);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:900;color:#fff;letter-spacing:.5px;
+  position:relative;
+  box-shadow:0 4px 16px rgba(30,58,110,.2);
+}
+.dev-icon-wrap::before{
+  content:'';position:absolute;inset:-7px;border-radius:50%;
+  border:1.5px solid transparent;border-top-color:var(--green);
+  animation:spin 3s linear infinite;
+}
+.dev-label{
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--green-dark);margin-bottom:14px;font-family:sans-serif;
+}
+.dev-row{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(76,175,80,.05);
+  border:1px solid rgba(76,175,80,.15);
+  border-radius:10px;padding:10px 12px;margin-bottom:8px;text-align:left;
+}
+.dev-row-icon{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
+.dev-row-label{font-size:9px;color:var(--text-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;font-family:sans-serif;}
+.dev-row-value{font-size:13px;font-weight:700;color:var(--navy);font-family:'Georgia',serif;}
+/* auto-close progress bar */
+.dev-auto-bar-wrap{
+  width:100%;height:3px;background:rgba(76,175,80,.15);border-radius:3px;
+  overflow:hidden;margin-top:12px;
+}
+.dev-auto-bar{
+  height:100%;width:100%;
+  background:linear-gradient(90deg,var(--green-dark),var(--harvest-gold));
+  transform-origin:left;
+  animation:devBarShrink 3s linear forwards;
+}
+@keyframes devBarShrink{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.dev-footer-txt{font-size:9px;color:var(--text-light);margin-top:8px;font-family:sans-serif;}
+
+/*──────────────────────────────────────────
+  MENU SCREEN
+──────────────────────────────────────────*/
+#menu-screen{
+  position:fixed;inset:0;z-index:40;display:none;
+  flex-direction:column;align-items:center;
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  background:var(--warm-white);
+}
+.menu-inner{width:100%;max-width:1000px;display:flex;flex-direction:column;align-items:center;}
+
+/* header */
+.menu-header{text-align:center;opacity:0;animation:hIn .7s .1s ease forwards;}
+.menu-header-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--green-dark);margin-bottom:10px;font-family:sans-serif;
+}
+.menu-header-badge em{display:inline-block;width:28px;height:1.5px;background:linear-gradient(90deg,transparent,var(--green));font-style:normal;}
+.menu-header-badge em:last-child{background:linear-gradient(90deg,var(--green),transparent);}
+.menu-header h1{font-weight:700;color:var(--navy);font-family:'Georgia',serif;}
+.menu-header p{color:var(--text-light);font-family:sans-serif;}
+.holo-line{
+  background:linear-gradient(90deg,transparent,var(--green),var(--harvest-gold),transparent);
+  margin:10px auto 0;
+  border-radius:2px;
+}
+
+/* grid */
+.menu-grid{display:grid;width:100%;}
+
+/* CARD BASE */
+.menu-card{
+  position:relative;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  display:flex;flex-direction:column;gap:10px;
+  text-decoration:none;overflow:hidden;cursor:pointer;
+  opacity:0;transform:translateY(36px) scale(.94);
+  box-shadow:0 4px 24px rgba(30,58,110,.06), 0 1px 4px rgba(76,175,80,.05);
+  transition:box-shadow .35s;
+}
+.menu-card.reveal{animation:cardIn .6s cubic-bezier(.22,1,.36,1) forwards;}
+
+/* corner brackets */
+.menu-card::before,.menu-card::after{
+  content:'';position:absolute;width:14px;height:14px;
+  border-color:var(--accent);border-style:solid;opacity:.35;
+  transition:opacity .3s,width .3s,height .3s;
+}
+.menu-card::before{top:9px;left:9px;border-width:2px 0 0 2px;}
+.menu-card::after {bottom:9px;right:9px;border-width:0 2px 2px 0;}
+
+/* top glow bar */
+.card-glow-bar{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+.card-sweep{
+  position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.3) 50%,transparent 62%);
+  transform:translateX(-120%);
+}
+/* harvest leaf watermark bottom right */
+.card-leaf{position:absolute;bottom:10px;right:12px;font-size:28px;opacity:.04;transition:opacity .35s;line-height:1;}
+.card-num{position:absolute;top:10px;right:14px;font-size:9px;font-weight:700;color:var(--accent);letter-spacing:1.5px;opacity:.4;font-family:sans-serif;}
+.card-icon{
+  border-radius:12px;background:var(--icon-bg);border:1.5px solid var(--icon-border);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  transition:transform .3s cubic-bezier(.22,1,.36,1);
+}
+.card-icon::after{
+  content:'';position:absolute;inset:-5px;border-radius:16px;
+  border:1.5px solid var(--accent);opacity:0;transform:scale(.8);
+  transition:opacity .3s,transform .3s;
+}
+.card-title{font-weight:700;color:var(--navy);line-height:1.3;font-family:'Georgia',serif;}
+.card-desc{color:var(--text-light);line-height:1.6;flex:1;font-family:sans-serif;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+.card-tag{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);opacity:.65;font-family:sans-serif;}
+.card-arrow{color:var(--accent);opacity:0;transition:transform .3s,opacity .3s;font-size:14px;}
+
+.page-footer{
+  color:var(--text-light);text-align:center;letter-spacing:.5px;
+  opacity:0;animation:fadeUp .6s 1.3s ease forwards;
+  font-family:sans-serif;font-size:10px;
+  border-top:1px solid rgba(76,175,80,.12);width:100%;padding-top:12px;
+}
+
+/*══════════════════════════════════════════
+  DESKTOP LAYOUT
+══════════════════════════════════════════*/
+body.desktop #menu-screen{padding:68px 28px 40px;}
+body.desktop .menu-inner{gap:26px;}
+body.desktop .menu-header h1{font-size:22px;}
+body.desktop .menu-header p{font-size:12px;margin-top:4px;}
+body.desktop .holo-line{width:90px;height:2px;}
+body.desktop .menu-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
+body.desktop .menu-card{padding:26px 20px 20px;transition:transform .32s cubic-bezier(.22,1,.36,1),background .32s,border-color .32s,box-shadow .32s;}
+body.desktop .menu-card:hover{
+  transform:translateY(-7px) scale(1.016);
+  background:rgba(255,255,255,.97);
+  border-color:var(--accent);
+  box-shadow:0 16px 48px rgba(30,58,110,.12), 0 2px 8px rgba(76,175,80,.1);
+}
+body.desktop .menu-card:hover::before,
+body.desktop .menu-card:hover::after{opacity:.9;width:20px;height:20px;}
+body.desktop .menu-card:hover .card-glow-bar{transform:scaleX(1);}
+body.desktop .menu-card:hover .card-sweep{transform:translateX(120%);transition:transform .65s ease;}
+body.desktop .menu-card:hover .card-leaf{opacity:.1;}
+body.desktop .menu-card:hover .card-icon{transform:scale(1.12) rotate(-5deg);}
+body.desktop .menu-card:hover .card-icon::after{opacity:.3;transform:scale(1);}
+body.desktop .menu-card:hover .card-arrow{transform:translateX(0);opacity:1;}
+body.desktop .card-icon{width:48px;height:48px;font-size:22px;}
+body.desktop .card-title{font-size:15px;}
+body.desktop .card-desc{font-size:11px;}
+body.desktop .card-arrow{transform:translateX(-8px);}
+body.desktop .page-footer{font-size:10px;margin-top:4px;}
+body.desktop .brand-sub{display:none;}
+
+/*══════════════════════════════════════════
+  MOBILE LAYOUT
+══════════════════════════════════════════*/
+body.mobile .top-bar{height:52px;padding:0 16px;}
+body.mobile .brand-text{font-size:12px;}
+body.mobile .status-dot{display:none;}
+body.mobile .clock{font-size:10px;}
+body.mobile #menu-screen{padding:60px 14px 100px;}
+body.mobile .menu-inner{gap:16px;}
+body.mobile .menu-header h1{font-size:18px;}
+body.mobile .menu-header p{font-size:11px;margin-top:3px;}
+body.mobile .holo-line{width:70px;height:2px;}
+body.mobile .menu-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+body.mobile .menu-card{padding:20px 14px 16px;border-radius:16px;transition:transform .18s ease,background .18s;}
+body.mobile .card-glow-bar{transform:scaleX(1);opacity:.5;}
+body.mobile .menu-card::before,body.mobile .menu-card::after{opacity:.3;}
+body.mobile .menu-card:active{animation:tapPulse .18s ease;background:rgba(76,175,80,.06);}
+body.mobile .card-leaf{opacity:.07;}
+body.mobile .card-arrow{opacity:.55;transform:translateX(0);font-size:12px;}
+body.mobile .card-icon{width:44px;height:44px;font-size:20px;}
+body.mobile .card-title{font-size:13px;}
+body.mobile .card-desc{font-size:10px;color:var(--text-light);}
+body.mobile .card-num{font-size:8px;}
+body.mobile .page-footer{font-size:9px;margin-top:4px;}
+body.mobile .w-ring{width:80px;height:80px;}
+body.mobile .w-ring-inner{width:52px;height:52px;font-size:9px;}
+body.mobile .w-ring::before{inset:-6px;}
+body.mobile .w-ring::after{inset:-13px;}
+body.mobile .w-progress-wrap{width:170px;}
+
+/* MOBILE BOTTOM NAV */
+#mobile-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;height:70px;
+  background:rgba(30,58,110,.97);
+  border-top:2px solid var(--green);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  z-index:500;align-items:center;justify-content:center;padding:0 12px;
+}
+body.mobile #mobile-nav{display:flex;}
+#mobile-nav-inner{display:flex;gap:6px;align-items:center;}
+.mnav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:7px 12px;border-radius:10px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  cursor:pointer;transition:background .18s;min-width:52px;
+}
+.mnav-item:active{background:rgba(76,175,80,.2);}
+.mnav-icon{font-size:18px;line-height:1;}
+.mnav-label{font-size:8px;color:rgba(255,255,255,.45);letter-spacing:.5px;white-space:nowrap;font-family:sans-serif;}
+
+/* SWIPE HINT */
+.swipe-hint{
+  display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  font-size:10px;color:var(--green-dark);letter-spacing:.8px;
+  animation:fadeUp .6s 1.6s ease both, blink 3s 2.2s ease 2;
+  white-space:nowrap;z-index:400;font-family:sans-serif;
+}
+body.mobile .swipe-hint{display:block;}
+</style>
+</head>
+<body>
+
+<canvas id="leaf-canvas"></canvas>
+
+<!--── TOP BAR ──────────────────────────────────────-->
+<div class="top-bar">
+  <div class="brand">
+    <div class="logo-circle">
+      <div class="logo-circle-inner">PS</div>
+    </div>
+    <div>
+      <div class="brand-text">Prasad Seeds Indonesia</div>
+      <div class="brand-sub">CMMS Platform</div>
+    </div>
+  </div>
+  <div class="top-right">
+    <div class="status-dot">SYSTEM ONLINE</div>
+    <div class="clock" id="live-clock"></div>
+  </div>
+</div>
+
+<!--── LOADING SCREEN (corn bar) ─────────────────────-->
+<div id="loading-screen">
+  <div class="loading-logo-wrap">
+    <div class="loading-logo-text">PS</div>
+  </div>
+  <div class="loading-title">
+    Welcome To<br>
+    <span class="green-glow">CMMS Maintenance</span>
+  </div>
+  <div class="loading-sub">Prasad Seeds Indonesia • Computerized Maintenance Management System</div>
+
+  <div class="corn-bar-wrap">
+    <div class="corn-bar-label">🌽 Loading...</div>
+    <div class="corn-track">
+      <div class="corn-fill" id="corn-fill">
+        <div class="corn-kernels" id="corn-kernels"></div>
+        <span class="corn-pct" id="corn-pct">0%</span>
+      </div>
+    </div>
+  </div>
+  <div class="loading-hint">🍃 Prepare The System...</div>
+</div>
+
+<!--── DEV POPUP ────────────────────────────────────-->
+<div id="dev-popup">
+  <div class="dev-card">
+    <div class="dev-leaf-deco">🍃</div>
+    <div class="dev-icon-wrap">PS</div>
+    <div class="dev-label">Developer Information</div>
+    <div class="dev-row">
+      <div class="dev-row-icon">👤</div>
+      <div>
+        <div class="dev-row-label">Developed by</div>
+        <div class="dev-row-value">Bintang Sadikin</div>
+      </div>
+    </div>
+    <div class="dev-row">
+      <div class="dev-row-icon">🌿</div>
+      <div>
+        <div class="dev-row-label">Department</div>
+        <div class="dev-row-value">Maintenance Administration</div>
+      </div>
+    </div>
+    <div class="dev-row">
+      <div class="dev-row-icon">⚙️</div>
+      <div>
+        <div class="dev-row-label">Apps Version</div>
+        <div class="dev-row-value">v4.3.0 &nbsp;·&nbsp; Tahun 2026</div>
+      </div>
+    </div>
+    <div class="dev-auto-bar-wrap">
+      <div class="dev-auto-bar" id="dev-auto-bar"></div>
+    </div>
+    <div class="dev-footer-txt">CMMS Maintenance · Prasad Seeds Indonesia 🌱</div>
+  </div>
+</div>
+
+<!--── WELCOME SCREEN ───────────────────────────────-->
+<div id="welcome-screen">
+  <div class="w-ring"><div class="w-ring-inner">PS</div></div>
+  <div class="w-badge">🌾 CMMS Platform</div>
+  <h1 class="w-title">Welcome to<br><span class="harvest-glow">CMMS Maintenance</span><br>Prasad Seeds Indonesia</h1>
+  <p class="w-sub">Computerized Maintenance Management System</p>
+  <div class="w-progress-wrap"><div class="w-progress-bar"></div></div>
+  <p class="w-hint">System Loading &hellip;</p>
+</div>
+
+<!--── MENU SCREEN ──────────────────────────────────-->
+<div id="menu-screen">
+  <div class="menu-inner">
+
+    <div class="menu-header">
+      <div class="menu-header-badge"><em></em>CMMS v4.3.0 &nbsp;🌾<em></em></div>
+      <h1>CMMS Maintenance</h1>
+      <p>Prasad Seeds Indonesia &nbsp;—&nbsp; Choose </p>
+      <div class="holo-line"></div>
+    </div>
+
+    <div class="menu-grid">
+
+      <!-- KARTU 1 — DAILY MONITORING -->
+      <a class="menu-card" href="https://daily-monitoring-theta.vercel.app/" target="_blank"
+         style="--accent:#4CAF50;--icon-bg:rgba(76,175,80,.08);--icon-border:rgba(76,175,80,.22)">
+        <div class="card-glow-bar"></div><div class="card-sweep"></div>
+        <div class="card-leaf">🌿</div>
+        <span class="card-num">Version 1.3</span>
+        <div class="card-icon">📊</div>
+        <div class="card-title">Daily Monitoring</div>
+        <div class="card-desc">Technician Apps For Reporting Monitoring Activity</div>
+        <div class="card-footer"><span class="card-tag">Monitoring</span><span class="card-arrow">→</span></div>
+      </a>
+
+      <!-- KARTU 2 — DAILY REPORTS -->
+      <a class="menu-card" href="https://daily-report-maintenance.vercel.app/" target="_blank"
+         style="--accent:#1E3A6E;--icon-bg:rgba(30,58,110,.08);--icon-border:rgba(30,58,110,.22)">
+        <div class="card-glow-bar"></div><div class="card-sweep"></div>
+        <div class="card-leaf">🌾</div>
+        <span class="card-num">Version 4.3</span>
+        <div class="card-icon">📋</div>
+        <div class="card-title">Daily Reports</div>
+        <div class="card-desc">Technician Apps For Reporting Daily Activities</div>
+        <div class="card-footer"><span class="card-tag">Reporting</span><span class="card-arrow">→</span></div>
+      </a>
+
+      <!-- KARTU 3 — WORK ORDERS -->
+      <a class="menu-card" href="https://work-orders-eight.vercel.app/#wo-list" target="_blank"
+         style="--accent:#d4a017;--icon-bg:rgba(212,160,23,.08);--icon-border:rgba(212,160,23,.22)">
+        <div class="card-glow-bar"></div><div class="card-sweep"></div>
+        <div class="card-leaf">🌽</div>
+        <span class="card-num">Version 2.1</span>
+        <div class="card-icon">🔧</div>
+        <div class="card-title">Work Orders</div>
+        <div class="card-desc">User and Administrator Apps For Managing Work Orders</div>
+        <div class="card-footer"><span class="card-tag">Task Mgmt</span><span class="card-arrow">→</span></div>
+      </a>
+
+      <!-- KARTU 4 — PREVENTIVE MAINTENANCE -->
+      <a class="menu-card" href="https://preventive-maintenance-prasad.vercel.app/" target="_blank"
+         style="--accent:#2e7d32;--icon-bg:rgba(46,125,50,.08);--icon-border:rgba(46,125,50,.22)">
+        <div class="card-glow-bar"></div><div class="card-sweep"></div>
+        <div class="card-leaf">🍃</div>
+        <span class="card-num">Version 1.3</span>
+        <div class="card-icon">🛡️</div>
+        <div class="card-title">Preventive Maintenance</div>
+        <div class="card-desc">Monitoring and scheduling preventive maintenance tasks</div>
+        <div class="card-footer"><span class="card-tag">Preventive</span><span class="card-arrow">→</span></div>
+      </a>
+
+      <!-- KARTU 5 — WAREHOUSE MAINTENANCE -->
+      <a class="menu-card" href="https://maintware-admin.vercel.app/" target="_blank"
+         style="--accent:#e07b00;--icon-bg:rgba(224,123,0,.08);--icon-border:rgba(224,123,0,.22)">
+        <div class="card-glow-bar"></div><div class="card-sweep"></div>
+        <div class="card-leaf">🌻</div>
+        <span class="card-num">Version 4.3</span>
+        <div class="card-icon">🏭</div>
+        <div class="card-title">Warehouse Maintenance</div>
+        <div class="card-desc">Storage Management Apps</div>
+        <div class="card-footer"><span class="card-tag">Warehouse</span><span class="card-arrow">→</span></div>
+      </a>
+
+      <!-- KARTU 6 — EQUIPMENT DATABASE -->
+      <a class="menu-card" href="https://equipment-database.vercel.app/" target="_blank"
+         style="--accent:#2d56a3;--icon-bg:rgba(45,86,163,.08);--icon-border:rgba(45,86,163,.22)">
+        <div class="card-glow-bar"></div><div class="card-sweep"></div>
+        <div class="card-leaf">🌱</div>
+        <span class="card-num">Beta Version 1.2</span>
+        <div class="card-icon">🗄️</div>
+        <div class="card-title">Equipment Database</div>
+        <div class="card-desc">Database For All Equipment In Prasad Seeds</div>
+        <div class="card-footer"><span class="card-tag">Database</span><span class="card-arrow">→</span></div>
+      </a>
+
+    </div>
+
+    <p class="page-footer">🌾 © 2026 Prasad Seeds Indonesia &nbsp;·&nbsp; CMMS v4.3.0</p>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <div class="mnav-item" onclick="document.getElementById('menu-screen').scrollTo({top:0,behavior:'smooth'})">
+      <div class="mnav-icon">🏠</div><div class="mnav-label">Menu</div>
+    </div>
+    <div class="mnav-item" onclick="showDevPopup()">
+      <div class="mnav-icon">🌿</div><div class="mnav-label">Info</div>
+    </div>
+    <div class="mnav-item" onclick="window.scrollTo(0,0)">
+      <div class="mnav-icon">🔄</div><div class="mnav-label">Refresh</div>
+    </div>
+  </div>
+</div>
+
+<div class="swipe-hint">↕ Geser untuk melihat semua menu</div>
+
+<script>
+/*──────────────────────────────────────────
+  DEVICE DETECTION
+──────────────────────────────────────────*/
+(function(){
+  const ua = navigator.userAgent || '';
+  const isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(ua);
+  const isTouchOnly = window.matchMedia('(pointer:coarse)').matches;
+  const isNarrow    = window.innerWidth < 900;
+  const MOBILE = isMobileUA || (isTouchOnly && isNarrow);
+  document.body.classList.add(MOBILE ? 'mobile' : 'desktop');
+  window._IS_MOBILE = MOBILE;
+})();
+
+/*──────────────────────────────────────────
+  LIVE CLOCK
+──────────────────────────────────────────*/
+function tick(){
+  const now = new Date();
+  const fmt = window._IS_MOBILE
+    ? now.toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'})
+    : now.toLocaleString('id-ID',{weekday:'short',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('live-clock').textContent = fmt;
+}
+tick(); setInterval(tick,1000);
+
+/*──────────────────────────────────────────
+  FALLING LEAVES CANVAS ANIMATION
+  Harvest theme: green leaves, warm white bg
+──────────────────────────────────────────*/
+(function(){
+  const cv = document.getElementById('leaf-canvas');
+  const ctx = cv.getContext('2d');
+  let W, H;
+
+  function resize(){
+    W = cv.width = window.innerWidth;
+    H = cv.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Leaf shapes (SVG path-like drawing using canvas)
+  // We draw different leaf types for harvest richness
+  function drawLeaf(ctx, size, color, type){
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.strokeStyle = 'rgba(46,125,50,0.3)';
+    ctx.lineWidth = 0.5;
+
+    if(type === 0){
+      // Simple oval leaf
+      ctx.beginPath();
+      ctx.ellipse(0, 0, size*0.38, size*0.6, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.stroke();
+      // vein
+      ctx.beginPath();
+      ctx.moveTo(0, -size*0.55);
+      ctx.lineTo(0,  size*0.55);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    } else if(type === 1){
+      // Pointed leaf
+      ctx.beginPath();
+      ctx.moveTo(0, -size*0.65);
+      ctx.quadraticCurveTo( size*0.42,  0,  0,  size*0.65);
+      ctx.quadraticCurveTo(-size*0.42,  0,  0, -size*0.65);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0,-size*.55);ctx.lineTo(0,size*.55);
+      ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=.8;ctx.stroke();
+    } else {
+      // Heart leaf
+      ctx.beginPath();
+      ctx.moveTo(0, size*0.6);
+      ctx.bezierCurveTo(-size*0.55, size*0.1, -size*0.7, -size*0.5, 0, -size*0.2);
+      ctx.bezierCurveTo( size*0.7, -size*0.5,  size*0.55, size*0.1, 0, size*0.6);
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // Leaf palette — greens + golden harvest tones
+  const COLORS = [
+    'rgba(76,175,80,0.82)',
+    'rgba(46,125,50,0.78)',
+    'rgba(129,199,132,0.75)',
+    'rgba(165,214,167,0.7)',
+    'rgba(102,187,106,0.8)',
+    'rgba(200,230,160,0.65)',  // light lime (new leaf)
+    'rgba(139,195,74,0.72)',
+    'rgba(212,160,23,0.5)',    // golden harvest touch
+  ];
+
+  // Particle class
+  class Leaf {
+    constructor(immediate){
+      this.reset(immediate);
+    }
+    reset(immediate){
+      this.x = Math.random() * W;
+      this.y = immediate ? Math.random() * H : -40 - Math.random()*60;
+      this.size = 10 + Math.random() * 16;
+      this.color = COLORS[Math.floor(Math.random()*COLORS.length)];
+      this.type = Math.floor(Math.random()*3);
+      this.rot = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.04;
+      this.speedY = 0.6 + Math.random() * 1.1;
+      this.speedX = (Math.random() - 0.5) * 0.7;
+      this.swayAmp = 20 + Math.random() * 40;
+      this.swayFreq = 0.004 + Math.random() * 0.006;
+      this.swayOff = Math.random() * Math.PI * 2;
+      this.opacity = 0;
+      this.fadeIn = 0.015 + Math.random() * 0.015;
+      this.t = Math.random() * 1000;
+      this.drift = (Math.random() - 0.5) * 0.3;
+    }
+    update(){
+      this.t++;
+      this.rot += this.rotSpeed;
+      this.y += this.speedY;
+      this.x += this.speedX + Math.sin(this.t * this.swayFreq + this.swayOff) * 0.6;
+      this.speedX += this.drift * 0.01;
+      if(this.opacity < 0.9) this.opacity = Math.min(0.9, this.opacity + this.fadeIn);
+      if(this.y > H + 40 || this.x < -60 || this.x > W + 60){
+        this.reset(false);
+      }
+    }
+    draw(ctx){
+      ctx.save();
+      ctx.globalAlpha = this.opacity;
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot);
+      // gentle shadow
+      ctx.shadowColor = 'rgba(46,125,50,0.15)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetY = 2;
+      drawLeaf(ctx, this.size, this.color, this.type);
+      ctx.restore();
+    }
+  }
+
+  // Create leaves — spawn some immediately distributed
+  const COUNT = window._IS_MOBILE ? 18 : 30;
+  const leaves = Array.from({length: COUNT}, (_, i) => new Leaf(i < COUNT * 0.6));
+
+  // Occasional golden shimmer/speckle (harvest dust)
+  class HarvestSpeck {
+    constructor(){this.reset();}
+    reset(){
+      this.x=Math.random()*W;
+      this.y=Math.random()*H;
+      this.r=1+Math.random()*2;
+      this.opacity=0;
+      this.life=0;
+      this.maxLife=60+Math.random()*80;
+      this.speedY=-0.3-Math.random()*.4;
+      this.speedX=(Math.random()-.5)*.3;
+    }
+    update(){
+      this.life++;
+      this.x+=this.speedX;this.y+=this.speedY;
+      const half=this.maxLife/2;
+      this.opacity = this.life<half ? this.life/half*.6 : (1-((this.life-half)/half))*.6;
+      if(this.life>this.maxLife) this.reset();
+    }
+    draw(ctx){
+      ctx.save();
+      ctx.globalAlpha=this.opacity;
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(212,160,23,0.8)';
+      ctx.shadowColor='rgba(212,160,23,0.5)';
+      ctx.shadowBlur=4;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const SPECK_COUNT = window._IS_MOBILE ? 6 : 14;
+  const specks = Array.from({length:SPECK_COUNT}, ()=> new HarvestSpeck());
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    specks.forEach(s=>{s.update();s.draw(ctx);});
+    leaves.forEach(l=>{l.update();l.draw(ctx);});
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/*──────────────────────────────────────────
+  CORN LOADING BAR — percent counter
+──────────────────────────────────────────*/
+(function(){
+  const fill = document.getElementById('corn-fill');
+  const pct  = document.getElementById('corn-pct');
+  const kernelsEl = document.getElementById('corn-kernels');
+
+  // Populate kernels
+  for(let i=0;i<28;i++){
+    const k=document.createElement('div');
+    k.className='corn-kernel';
+    k.style.animationDelay=(i*.08)+'s';
+    kernelsEl.appendChild(k);
+  }
+
+  let val = 0;
+  const total = 3800; // 3.8s duration in ms
+  const start = performance.now();
+
+  function step(now){
+    const elapsed = now - start;
+    val = Math.min(100, Math.round((elapsed/total)*100));
+    pct.textContent = val+'%';
+    if(val < 100) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+
+/*──────────────────────────────────────────
+  DEV POPUP — auto-show + 3s auto-close
+──────────────────────────────────────────*/
+const devPopup = document.getElementById('dev-popup');
+let devAutoCloseTimer = null;
+
+function showDevPopup(){
+  devPopup.style.animation = '';
+  devPopup.style.display = '';
+  devPopup.classList.add('show');
+  // Restart auto-bar animation
+  const bar = document.getElementById('dev-auto-bar');
+  bar.style.animation='none';
+  void bar.offsetWidth;
+  bar.style.animation='devBarShrink 3s linear forwards';
+  // Auto-close in 3s
+  clearTimeout(devAutoCloseTimer);
+  devAutoCloseTimer = setTimeout(closeDevPopup, 3000);
+}
+
+function closeDevPopup(){
+  clearTimeout(devAutoCloseTimer);
+  devPopup.style.animation='bgOut .3s ease forwards';
+  setTimeout(()=>{
+    devPopup.style.display='none';
+    devPopup.classList.remove('show');
+    devPopup.style.animation='';
+  },310);
+}
+// Click backdrop to close
+devPopup.addEventListener('click', function(e){
+  if(e.target === devPopup) closeDevPopup();
+});
+
+/*──────────────────────────────────────────
+  SEQUENCE:
+  0s   → Loading screen (corn bar 3.8s)
+  4s   → Loading hides → Welcome shows
+  4s   → Dev popup shows (auto-close 3s)
+  9s   → Welcome hides → Menu shows
+──────────────────────────────────────────*/
+const loadingScreen = document.getElementById('loading-screen');
+const welcome = document.getElementById('welcome-screen');
+const menu = document.getElementById('menu-screen');
+const mobileNav = document.getElementById('mobile-nav');
+const swipeHint = document.querySelector('.swipe-hint');
+
+// Step 1: After corn bar (~4s), hide loading, show welcome, show dev popup
+setTimeout(()=>{
+  loadingScreen.style.animation = 'wOut .7s ease forwards';
+  setTimeout(()=>{
+    loadingScreen.style.display = 'none';
+    // Show welcome
+    welcome.style.display = 'flex';
+    welcome.style.animation = 'wIn .8s ease forwards';
+    // Show dev popup
+    showDevPopup();
+  }, 700);
+}, 4000);
+
+// Step 2: After welcome progress bar (5s from welcome appear = 4.7s from loading hide)
+setTimeout(()=>{
+  welcome.style.animation = 'wOut .8s ease forwards';
+  setTimeout(()=>{
+    welcome.style.display = 'none';
+    menu.style.display = 'flex';
+    if(window._IS_MOBILE && mobileNav) mobileNav.style.display = 'flex';
+
+    document.querySelectorAll('.menu-card').forEach((c,i)=>{
+      setTimeout(()=>c.classList.add('reveal'), i*110);
+    });
+
+    if(swipeHint) setTimeout(()=>{
+      swipeHint.style.opacity='0';
+      swipeHint.style.transition='opacity .6s';
+    }, 5000);
+  }, 820);
+}, 4000 + 700 + 5000); // after welcome screen 5s progress bar
+
+/*──────────────────────────────────────────
+  MOBILE TOUCH RIPPLE
+──────────────────────────────────────────*/
+if(window._IS_MOBILE){
+  document.querySelectorAll('.menu-card').forEach(card=>{
+    card.addEventListener('touchstart',()=>{card.style.background='rgba(76,175,80,.07)';},{passive:true});
+    card.addEventListener('touchend',()=>{setTimeout(()=>{card.style.background='';},200);},{passive:true});
+  });
+}
+</script>
+</body>
+</html>
