@@ -680,9 +680,9 @@ body.mobile .swipe-hint{display:block;}
     <div class="mnav-item" onclick="document.getElementById('menu-screen').scrollTo({top:0,behavior:'smooth'})">
       <div class="mnav-icon">🏠</div><div class="mnav-label">Menu</div>
     </div>
-    <div class="mnav-item" onclick="showDevPopup()">
-      <div class="mnav-icon">🌿</div><div class="mnav-label">Info</div>
-    </div>
+    <div class="mnav-item" onclick="document.getElementById('menu-screen').scrollTo({top:0,behavior:'smooth'})">
+  <div class="mnav-icon">🌿</div><div class="mnav-label">Info</div>
+</div>
     <div class="mnav-item" onclick="window.scrollTo(0,0)">
       <div class="mnav-icon">🔄</div><div class="mnav-label">Refresh</div>
     </div>
@@ -918,36 +918,7 @@ tick(); setInterval(tick,1000);
 /*──────────────────────────────────────────
   DEV POPUP — auto-show + 3s auto-close
 ──────────────────────────────────────────*/
-const devPopup = document.getElementById('dev-popup');
-let devAutoCloseTimer = null;
-
-function showDevPopup(){
-  devPopup.style.animation = '';
-  devPopup.style.display = '';
-  devPopup.classList.add('show');
-  // Restart auto-bar animation
-  const bar = document.getElementById('dev-auto-bar');
-  bar.style.animation='none';
-  void bar.offsetWidth;
-  bar.style.animation='devBarShrink 3s linear forwards';
-  // Auto-close in 3s
-  clearTimeout(devAutoCloseTimer);
-  devAutoCloseTimer = setTimeout(closeDevPopup, 3000);
-}
-
-function closeDevPopup(){
-  clearTimeout(devAutoCloseTimer);
-  devPopup.style.animation='bgOut .3s ease forwards';
-  setTimeout(()=>{
-    devPopup.style.display='none';
-    devPopup.classList.remove('show');
-    devPopup.style.animation='';
-  },310);
-}
-// Click backdrop to close
-devPopup.addEventListener('click', function(e){
-  if(e.target === devPopup) closeDevPopup();
-});
+// dev popup removed
 
 /*──────────────────────────────────────────
   SEQUENCE:
@@ -962,16 +933,12 @@ const menu = document.getElementById('menu-screen');
 const mobileNav = document.getElementById('mobile-nav');
 const swipeHint = document.querySelector('.swipe-hint');
 
-// Step 1: After corn bar (~4s), hide loading, show welcome, show dev popup
 setTimeout(()=>{
   loadingScreen.style.animation = 'wOut .7s ease forwards';
   setTimeout(()=>{
     loadingScreen.style.display = 'none';
-    // Show welcome
     welcome.style.display = 'flex';
     welcome.style.animation = 'wIn .8s ease forwards';
-    // Show dev popup
-    showDevPopup();
   }, 700);
 }, 4000);
 
@@ -992,7 +959,7 @@ setTimeout(()=>{
       swipeHint.style.transition='opacity .6s';
     }, 5000);
   }, 820);
-}, 4000 + 700 + 5000); // after welcome screen 5s progress bar
+}, 4000 + 700 + 4200);
 
 /*──────────────────────────────────────────
   MOBILE TOUCH RIPPLE
