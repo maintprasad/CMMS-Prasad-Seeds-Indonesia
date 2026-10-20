@@ -614,7 +614,7 @@ final class PreventiveApi
         return [
             'totals' => $tot + ['schedules' => count($sched), 'schedules_done' => $done],
             'by_type' => Db::query("SELECT COALESCE(t.label, r.pm_type, '—') label, COUNT(*) reports, SUM(r.items_total) items, SUM(r.items_ok) ok, SUM(r.items_no) no,
-                    (SELECT COUNT(*) FROM pm_report_parts x JOIN pm_reports rr ON rr.id = x.report_id WHERE rr.pm_type IS r.pm_type) parts
+                    (SELECT COUNT(*) FROM pm_report_parts x JOIN pm_reports rr ON rr.id = x.report_id WHERE (rr.pm_type = r.pm_type OR (rr.pm_type IS NULL AND r.pm_type IS NULL))) parts
                     FROM pm_reports r LEFT JOIN pm_types t ON t.code = r.pm_type $w GROUP BY r.pm_type ORDER BY reports DESC", $p),
             'by_unit' => Db::query("SELECT COALESCE(u.name, '—') label, COUNT(*) reports, COUNT(DISTINCT r.equipment_id) equipment FROM pm_reports r LEFT JOIN units u ON u.id = r.unit_id $w GROUP BY r.unit_id ORDER BY reports DESC", $p),
             'by_month' => Db::query("SELECT r.month, COUNT(*) reports FROM pm_reports r $w GROUP BY r.month ORDER BY r.month", $p),

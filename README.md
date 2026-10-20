@@ -26,6 +26,15 @@ Database (SQLite / Turso)  ←  Backend PHP (api/index.php?r=…)  →  Frontend
 
 Catatan: akun demo (`seed-demo.php`) ikut tersalin bila ada di lokal — hapus/ubah passwordnya sebelum dipakai produksi.
 
+## MySQL / MariaDB (server sendiri)
+1. Buat database kosong: `CREATE DATABASE cmms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;` dan user khusus (hak penuh atas database itu).
+2. Salin `.env.mysql.example` → `.env.mysql` (atau isi `.env`): `DB_DRIVER=mysql`, `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `ADMIN_PASSWORD`. Butuh ekstensi PHP `pdo_mysql` dan MySQL ≥ 5.7 / MariaDB ≥ 10.3.
+3. Cek koneksi: `php scripts/db-check.php --env=.env.mysql`; pasang skema: `php scripts/migrate.php --env=.env.mysql`.
+4. Salin data dari SQLite lokal (opsional): `php scripts/copy-db.php --env=.env.mysql` (`--force` bila tujuan sudah berisi).
+5. Uji: `php scripts/test-e2e.php --mysql` (memakai database `cmms_test`, dibuat ulang tiap kali — jangan arahkan ke database berisi data).
+
+Catatan teknis: skema MySQL ada di `api/migrations/mysql/` (dibuat dari versi SQLite dengan `php scripts/make-mysql-ddl.php`). **Setiap migrasi baru harus punya pasangan di folder mysql** — Migrator menolak jalan bila ada yang kurang. `MysqlDriver` menerjemahkan idiom SQLite (`ON CONFLICT`, `INSERT OR IGNORE`, `GROUP_CONCAT(x, ', ')`, `ESCAPE`) dan memakai `sql_mode` ANSI_QUOTES + PIPES_AS_CONCAT. Di MySQL, pengelompokan teks (`GROUP BY`) tidak membedakan huruf besar/kecil (collation `_ci`), dan urutan baris yang nilai urutnya sama bisa berbeda dari SQLite.
+
 ## Struktur
 - `api/_lib/` — Env, Http, Database (+ driver SQLite/Turso), Migrator, Auth
 - `api/modules/` — Equipment.php, Users.php, WorkOrder.php (satu file per modul; daftar rute di `api/index.php`)

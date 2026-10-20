@@ -5,6 +5,7 @@ declare(strict_types=1);
  * Menyalin seluruh isi database SQLite lokal ke database tujuan (Turso) — satu arah, lokal → tujuan.
  *
  *   php scripts/copy-db.php --env=.env.turso                       # sumber: database/cmms.db
+ *   php scripts/copy-db.php --env=.env.mysql                       # tujuan MySQL/MariaDB
  *   php scripts/copy-db.php --env=.env.turso --from=database/x.db
  *   php scripts/copy-db.php --env=.env.turso --force               # timpa data yang sudah ada di tujuan
  *
@@ -22,8 +23,8 @@ function out(string $s): void
 }
 
 try {
-    if (Db::driverName() !== 'turso' && !cliFlag('allow-sqlite')) {
-        throw new RuntimeException('Tujuan bukan Turso. Jalankan dengan --env=.env.turso (isi TURSO_DATABASE_URL & TURSO_AUTH_TOKEN).');
+    if (!in_array(Db::driverName(), ['turso', 'mysql'], true) && !cliFlag('allow-sqlite')) {
+        throw new RuntimeException('Tujuan bukan Turso/MySQL. Jalankan dengan --env=.env.turso atau --env=.env.mysql.');
     }
     $from = 'database/cmms.db';
     foreach (array_slice($argv, 1) as $a) {
@@ -80,7 +81,9 @@ try {
 
     $total = 0;
     foreach ($order as $t) {
-        $dst = array_column(Db::query("SELECT name FROM pragma_table_info('$t')"), 'name');
+        $dst = Db::driverName() === 'mysql'
+            ? array_column(Db::query('SELECT column_name AS name FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ?', [$t]), 'name')
+            : array_column(Db::query("SELECT name FROM pragma_table_info('$t')"), 'name');
         $cols = array_values(array_intersect(array_column($src->queryMany([["SELECT name FROM pragma_table_info('$t')"]])[0], 'name'), $dst));
         if (!$cols) {
             out(sprintf('  %-22s dilewati (tabel tidak ada di tujuan)', $t));

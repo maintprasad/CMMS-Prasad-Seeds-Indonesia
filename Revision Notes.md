@@ -288,3 +288,22 @@ Pengguna sering keluar sendiri (sesi berakhir). Log Apache menunjukkan token dar
 - Tes API 230 lulus; uji Chrome: tetap login setelah `localStorage` dihapus, token salah tetap mengarah ke login.
 
 **Nomor versi terbaru:** 1.1.1
+
+## 2026-10-20 (11)
+
+**Version:** 1.2
+
+**Penyebab revisi:**
+Permintaan: setup Turso/Vercel dan dukungan MySQL agar aplikasi bisa dipasang di server sendiri.
+
+**Metode revisi:**
+- Turso: `scripts/db-check.php`, `scripts/copy-db.php` (skema + salin data lokal, verifikasi jumlah baris), `.env.turso.example`, `.vercelignore`, region Vercel `iad1`, koneksi curl dipakai ulang (keep-alive). Database Turso `prasad-cmms` sudah diisi data lokal (7.409 baris); user demo dihapus, hanya `admin`.
+- MySQL/MariaDB: `api/_lib/MysqlDriver.php` (PDO, sql_mode ANSI_QUOTES + PIPES_AS_CONCAT, terjemahan ON CONFLICT / INSERT OR IGNORE / GROUP_CONCAT / ESCAPE, DECIMAL → angka, sambung ulang otomatis), migrasi `api/migrations/mysql/` (dibuat dengan `scripts/make-mysql-ddl.php`), Migrator memilih folder sesuai driver dan menolak bila ada migrasi tanpa pasangan MySQL, `copy-db.php`/`db-check.php` mendukung MySQL, `test-e2e.php --mysql`.
+- Penyesuaian SQL agar portabel: `HAVING` memakai ekspresi agregat (bukan alias), `IS <kolom>` diganti perbandingan NULL-aman.
+- Perbaikan sesi: token 30 hari + sliding, cadangan cookie, 401 diverifikasi ulang; ikon pencarian topbar dirapikan.
+
+**Hasil revisi:**
+- Tes e2e 230 lulus di SQLite **dan** di MariaDB 10.4; 31 endpoint dibandingkan SQLite vs MySQL dengan data yang sama — 22 identik, 9 berbeda hanya karena urutan baris bernilai sama (tanpa tie-break) dan pengelompokan label tanpa beda huruf besar/kecil di MySQL.
+- Belum diuji: MySQL 8 (bukan MariaDB), deploy Vercel dengan Turso (kode siap, env perlu diisi di Vercel), performa MySQL jarak jauh.
+
+**Nomor versi terbaru:** 1.2

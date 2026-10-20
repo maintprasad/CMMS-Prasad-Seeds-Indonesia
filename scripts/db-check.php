@@ -8,7 +8,9 @@ try {
     Db::query('SELECT 1');
     $ms = round((microtime(true) - $t) * 1000);
     echo 'Driver   : ' . Db::driverName() . "\nKoneksi  : OK ({$ms} ms)\n";
-    $tables = array_column(Db::query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name"), 'name');
+    $tables = Db::driverName() === 'mysql'
+        ? array_column(Db::query('SELECT table_name AS name FROM information_schema.tables WHERE table_schema = DATABASE() ORDER BY table_name'), 'name')
+        : array_column(Db::query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name"), 'name');
     echo 'Tabel    : ' . count($tables) . "\n";
     foreach (['units', 'equipment', 'users', 'work_orders', 'mw_items', 'pm_reports', 'dm_sessions'] as $x) {
         if (in_array($x, $tables, true)) {

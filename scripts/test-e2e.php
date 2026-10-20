@@ -8,11 +8,22 @@ declare(strict_types=1);
  */
 $root = dirname(__DIR__);
 $dbFile = $root . '/database/test-e2e.db';
+// Tambahkan --mysql untuk menguji pada MySQL/MariaDB (database cmms_test, dibuat ulang; env MYSQL_* bisa menimpa)
+$useMysql = in_array('--mysql', $argv, true);
 foreach (['', '-wal', '-shm'] as $s) {
     @unlink($dbFile . $s);
 }
-putenv('SQLITE_PATH=database/test-e2e.db');
-putenv('DB_DRIVER=sqlite');
+if ($useMysql) {
+    $my = fn (string $k, string $d) => getenv($k) !== false && getenv($k) !== '' ? getenv($k) : $d;
+    $pdo = new PDO('mysql:host=' . $my('MYSQL_HOST', '127.0.0.1') . ';port=' . $my('MYSQL_PORT', '3306') . ';charset=utf8mb4', $my('MYSQL_USER', 'root'), $my('MYSQL_PASSWORD', ''));
+    $pdo->exec('DROP DATABASE IF EXISTS cmms_test');
+    $pdo->exec('CREATE DATABASE cmms_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    putenv('DB_DRIVER=mysql');
+    putenv('MYSQL_DATABASE=cmms_test');
+} else {
+    putenv('SQLITE_PATH=database/test-e2e.db');
+    putenv('DB_DRIVER=sqlite');
+}
 putenv('ADMIN_USERNAME=admin');
 putenv('ADMIN_PASSWORD=admin-test-1');
 $_ENV['SQLITE_PATH'] = 'database/test-e2e.db';

@@ -39,6 +39,9 @@ final class Db
     public static function driverName(): string
     {
         $explicit = strtolower((string) Env::get('DB_DRIVER', ''));
+        if ($explicit === 'mariadb') {
+            return 'mysql';
+        }
         if ($explicit !== '') {
             return $explicit;
         }
@@ -55,8 +58,18 @@ final class Db
             }
             return new TursoDriver($url, $token);
         }
+        if ($name === 'mysql' || $name === 'mariadb') {
+            return new MysqlDriver(
+                Env::get('MYSQL_HOST', '127.0.0.1'),
+                (int) Env::get('MYSQL_PORT', '3306'),
+                (string) Env::get('MYSQL_DATABASE', 'cmms'),
+                (string) Env::get('MYSQL_USER', 'root'),
+                (string) Env::get('MYSQL_PASSWORD', ''),
+                (string) Env::get('MYSQL_SOCKET', ''),
+            );
+        }
         if ($name !== 'sqlite') {
-            throw new RuntimeException("DB_DRIVER tidak dikenal: $name (pakai sqlite atau turso)");
+            throw new RuntimeException("DB_DRIVER tidak dikenal: $name (pakai sqlite, turso, atau mysql)");
         }
         $path = Env::get('SQLITE_PATH', 'database/cmms.db');
         if (!preg_match('~^([a-zA-Z]:)?[\\\\/]~', $path)) {
@@ -95,7 +108,8 @@ final class Db
         } catch (Throwable $e) {
             $msg = strtolower($e->getMessage());
             // Tabel/kolom belum ada = database kosong atau masih skema versi lama
-            if (!str_contains($msg, 'no such table') && !str_contains($msg, 'no such column')) {
+            if (!str_contains($msg, 'no such table') && !str_contains($msg, 'no such column')
+                && !str_contains($msg, "doesn't exist") && !str_contains($msg, 'unknown column')) {
                 throw $e;
             }
             if (!Migrator::hasPending()) {

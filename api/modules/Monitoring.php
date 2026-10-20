@@ -679,7 +679,7 @@ final class MonitoringApi
             'top_params' => Db::query("SELECT i.label, COUNT(*) c FROM dm_items i WHERE i.status IN ('WARNING','ALERT') GROUP BY i.label ORDER BY c DESC LIMIT 5"),
             'overdue' => Db::query("SELECT e.id, e.name, a.name AS area, MAX(s.session_date) AS last_date FROM (SELECT DISTINCT equipment_id FROM equipment_params) p
                                     JOIN equipment e ON e.id = p.equipment_id JOIN areas a ON a.id = e.area_id LEFT JOIN dm_sessions s ON s.equipment_id = e.id
-                                    GROUP BY e.id HAVING last_date IS NULL OR last_date < ? ORDER BY last_date IS NOT NULL, last_date LIMIT 8", [$since7]),
+                                    GROUP BY e.id HAVING MAX(s.session_date) IS NULL OR MAX(s.session_date) < ? ORDER BY MAX(s.session_date) IS NOT NULL, MAX(s.session_date) LIMIT 8", [$since7]),
             'recent' => Db::query("SELECT s.id, s.session_date, s.start_time, s.pic, s.status, e.name AS equipment_name, a.name AS area_name
                                    FROM dm_sessions s JOIN equipment e ON e.id = s.equipment_id LEFT JOIN areas a ON a.id = s.area_id
                                    ORDER BY s.session_date DESC, s.start_time DESC, s.id DESC LIMIT 8"),

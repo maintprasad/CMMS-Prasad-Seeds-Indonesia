@@ -3,3 +3,4 @@
 !.env.example
 database/*.db*
 !.env.turso.example
+!.env.mysql.example

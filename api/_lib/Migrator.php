@@ -10,7 +10,16 @@ final class Migrator
     /** @return string[] path file migrasi, urut */
     private static function files(): array
     {
-        $files = glob(APP_ROOT . '/api/migrations/*.sql') ?: [];
+        // MySQL/MariaDB memakai berkas sendiri di api/migrations/mysql/ (dibuat dengan scripts/make-mysql-ddl.php)
+        $dir = APP_ROOT . '/api/migrations' . (Db::driverName() === 'mysql' ? '/mysql' : '');
+        $files = glob($dir . '/*.sql') ?: [];
+        if (Db::driverName() === 'mysql') {
+            $have = array_map('basename', $files);
+            $missing = array_diff(array_map('basename', glob(APP_ROOT . '/api/migrations/*.sql') ?: []), $have);
+            if ($missing) {
+                throw new RuntimeException('Migrasi belum punya versi MySQL: ' . implode(', ', $missing) . ' — jalankan php scripts/make-mysql-ddl.php lalu periksa hasilnya.');
+            }
+        }
         sort($files);
         return $files;
     }
@@ -40,7 +49,9 @@ final class Migrator
     public static function run(): array
     {
         Db::driver()->transaction([[
-            'CREATE TABLE IF NOT EXISTS schema_migrations (version TEXT PRIMARY KEY, applied_at TEXT NOT NULL)',
+            Db::driverName() === 'mysql'
+                ? 'CREATE TABLE IF NOT EXISTS schema_migrations (version VARCHAR(190) PRIMARY KEY, applied_at VARCHAR(40) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+                : 'CREATE TABLE IF NOT EXISTS schema_migrations (version TEXT PRIMARY KEY, applied_at TEXT NOT NULL)',
         ]]);
         $done = self::applied();
         $ran = [];

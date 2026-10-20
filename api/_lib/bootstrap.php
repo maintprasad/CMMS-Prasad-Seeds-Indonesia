@@ -13,6 +13,7 @@ require __DIR__ . '/Http.php';
 require __DIR__ . '/Database.php';
 require __DIR__ . '/SqliteDriver.php';
 require __DIR__ . '/TursoDriver.php';
+require __DIR__ . '/MysqlDriver.php';
 require __DIR__ . '/Migrator.php';
 require __DIR__ . '/Auth.php';
 
