@@ -9,6 +9,8 @@ declare(strict_types=1);
 final class TursoDriver implements DbDriver
 {
     private string $endpoint;
+    /** Handle curl dipakai ulang (keep-alive) supaya tiap query tidak mengulang handshake TLS. */
+    private static ?CurlHandle $ch = null;
 
     public function __construct(string $url, private readonly string $token)
     {
@@ -123,14 +125,18 @@ final class TursoDriver implements DbDriver
         }
 
         if (function_exists('curl_init')) {
-            $ch = curl_init($this->endpoint);
+            $ch = self::$ch ??= curl_init();
             curl_setopt_array($ch, [
+                CURLOPT_URL            => $this->endpoint,
                 CURLOPT_POST           => true,
                 CURLOPT_POSTFIELDS     => $payload,
                 CURLOPT_HTTPHEADER     => $headers,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CONNECTTIMEOUT => 10,
                 CURLOPT_TIMEOUT        => 30,
+                CURLOPT_TCP_KEEPALIVE  => 1,
+                CURLOPT_FORBID_REUSE   => false,
+                CURLOPT_ENCODING       => '',
             ]);
             $raw = curl_exec($ch);
             $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);

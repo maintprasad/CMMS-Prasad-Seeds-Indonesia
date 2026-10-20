@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["iad1"],
   "functions": {
     "api/index.php": { "runtime": "vercel-php@0.9.0", "includeFiles": "api/**", "maxDuration": 30 }
   },
