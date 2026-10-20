@@ -1,0 +1,1822 @@
+{
+ "labels": {
+  "TRANSFORMER": "🔌 TRANSFORMER & CUBICLE",
+  "LVMDP": "⚡ LVMDP",
+  "CAPACITOR_BANK": "🔋 CAPACITOR BANK",
+  "MCC": "🗄 MCC PANEL",
+  "AIR_COMPRESSOR": "💨 AIR COMPRESSOR",
+  "HYDRANT": "🚒 HYDRANT",
+  "MINI_CHAMBER": "🔧 MINI CHAMBER",
+  "COLD_STORAGE": "❄ COLD STORAGE",
+  "OTHER": "📦 LAINNYA"
+ },
+ "templates": {
+  "TRANSFORMER": [
+   {
+    "id": "tp1",
+    "label": "Suhu Trafo",
+    "unit": "°C",
+    "section": "Kondisi Trafo",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 65,
+    "warnMax": 85
+   },
+   {
+    "id": "tp2",
+    "label": "Level Oli",
+    "unit": "%",
+    "section": "Kondisi Trafo",
+    "type": "numeric",
+    "normalMin": 90,
+    "normalMax": 100,
+    "warnMin": 80
+   },
+   {
+    "id": "tp3",
+    "label": "Arus R",
+    "unit": "A",
+    "section": "Arus per Phase",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1600,
+    "warnMax": 2000
+   },
+   {
+    "id": "tp4",
+    "label": "Arus S",
+    "unit": "A",
+    "section": "Arus per Phase",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1600,
+    "warnMax": 2000
+   },
+   {
+    "id": "tp5",
+    "label": "Arus T",
+    "unit": "A",
+    "section": "Arus per Phase",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1600,
+    "warnMax": 2000
+   },
+   {
+    "id": "tp6",
+    "label": "Cos φ (Power Factor)",
+    "unit": "",
+    "section": "Power Quality",
+    "type": "numeric",
+    "normalMin": 0.85,
+    "normalMax": 1,
+    "warnMin": 0.8
+   },
+   {
+    "id": "tp7",
+    "label": "THDi (% Harmonik Arus)",
+    "unit": "%",
+    "section": "Power Quality",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 5,
+    "warnMax": 8
+   },
+   {
+    "id": "tp8",
+    "label": "Load",
+    "unit": "kVA",
+    "section": "Beban",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1200,
+    "warnMax": 1500
+   },
+   {
+    "id": "tp9",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   },
+   {
+    "id": "tp10",
+    "label": "Temuan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "NORMAL",
+     "PERLU PERHATIAN",
+     "KRITIS"
+    ]
+   }
+  ],
+  "LVMDP": [
+   {
+    "id": "lp0",
+    "label": "Suhu Panel",
+    "unit": "°C",
+    "section": "Kondisi Panel",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 60,
+    "warnMax": 70
+   },
+   {
+    "id": "lp1",
+    "label": "Arus MAIN R",
+    "unit": "A",
+    "section": "Arus MAIN",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1000,
+    "warnMax": 1100
+   },
+   {
+    "id": "lp2",
+    "label": "Arus MAIN S",
+    "unit": "A",
+    "section": "Arus MAIN",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1000,
+    "warnMax": 1100
+   },
+   {
+    "id": "lp3",
+    "label": "Arus MAIN T",
+    "unit": "A",
+    "section": "Arus MAIN",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1000,
+    "warnMax": 1100
+   },
+   {
+    "id": "lp4",
+    "label": "Arus Prairie R",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp5",
+    "label": "Arus Prairie S",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp6",
+    "label": "Arus Prairie T",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp7",
+    "label": "Arus Peanut R",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp8",
+    "label": "Arus Peanut S",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp9",
+    "label": "Arus Peanut T",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp10",
+    "label": "Arus Petkus R",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp11",
+    "label": "Arus Petkus S",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp12",
+    "label": "Arus Petkus T",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp13",
+    "label": "Arus CTP 1 R",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp14",
+    "label": "Arus CTP 1 S",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp15",
+    "label": "Arus CTP 1 T",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp16",
+    "label": "Arus CTP 2 R (PF)",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp17",
+    "label": "Arus CTP 2 S (PF)",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp18",
+    "label": "Arus CTP 2 T (PF)",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 800,
+    "warnMax": 900
+   },
+   {
+    "id": "lp19",
+    "label": "Tegangan R-S",
+    "unit": "V",
+    "section": "Tegangan MAIN",
+    "type": "numeric",
+    "normalMin": 395,
+    "normalMax": 435,
+    "warnMin": 380,
+    "warnMax": 450
+   },
+   {
+    "id": "lp20",
+    "label": "Tegangan S-T",
+    "unit": "V",
+    "section": "Tegangan MAIN",
+    "type": "numeric",
+    "normalMin": 395,
+    "normalMax": 435,
+    "warnMin": 380,
+    "warnMax": 450
+   },
+   {
+    "id": "lp21",
+    "label": "Tegangan T-R",
+    "unit": "V",
+    "section": "Tegangan MAIN",
+    "type": "numeric",
+    "normalMin": 395,
+    "normalMax": 435,
+    "warnMin": 380,
+    "warnMax": 450
+   },
+   {
+    "id": "lp22",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   }
+  ],
+  "CAPACITOR_BANK": [
+   {
+    "id": "cp_sc1",
+    "label": "Suhu Kapasitor Step 1",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc2",
+    "label": "Suhu Kapasitor Step 2",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc3",
+    "label": "Suhu Kapasitor Step 3",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc4",
+    "label": "Suhu Kapasitor Step 4",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc5",
+    "label": "Suhu Kapasitor Step 5",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc6",
+    "label": "Suhu Kapasitor Step 6",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc7",
+    "label": "Suhu Kapasitor Step 7",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc8",
+    "label": "Suhu Kapasitor Step 8",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc9",
+    "label": "Suhu Kapasitor Step 9",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc10",
+    "label": "Suhu Kapasitor Step 10",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc11",
+    "label": "Suhu Kapasitor Step 11",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc12",
+    "label": "Suhu Kapasitor Step 12",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc13",
+    "label": "Suhu Kapasitor Step 13",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc14",
+    "label": "Suhu Kapasitor Step 14",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc15",
+    "label": "Suhu Kapasitor Step 15",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc16",
+    "label": "Suhu Kapasitor Step 16",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc17",
+    "label": "Suhu Kapasitor Step 17",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc18",
+    "label": "Suhu Kapasitor Step 18",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc19",
+    "label": "Suhu Kapasitor Step 19",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sc20",
+    "label": "Suhu Kapasitor Step 20",
+    "unit": "°C",
+    "section": "Suhu Kapasitor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct1",
+    "label": "Suhu Contactor/MCB Step 1",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct2",
+    "label": "Suhu Contactor/MCB Step 2",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct3",
+    "label": "Suhu Contactor/MCB Step 3",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct4",
+    "label": "Suhu Contactor/MCB Step 4",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct5",
+    "label": "Suhu Contactor/MCB Step 5",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct6",
+    "label": "Suhu Contactor/MCB Step 6",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct7",
+    "label": "Suhu Contactor/MCB Step 7",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct8",
+    "label": "Suhu Contactor/MCB Step 8",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct9",
+    "label": "Suhu Contactor/MCB Step 9",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct10",
+    "label": "Suhu Contactor/MCB Step 10",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct11",
+    "label": "Suhu Contactor/MCB Step 11",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct12",
+    "label": "Suhu Contactor/MCB Step 12",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct13",
+    "label": "Suhu Contactor/MCB Step 13",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct14",
+    "label": "Suhu Contactor/MCB Step 14",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct15",
+    "label": "Suhu Contactor/MCB Step 15",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct16",
+    "label": "Suhu Contactor/MCB Step 16",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct17",
+    "label": "Suhu Contactor/MCB Step 17",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct18",
+    "label": "Suhu Contactor/MCB Step 18",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct19",
+    "label": "Suhu Contactor/MCB Step 19",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_sct20",
+    "label": "Suhu Contactor/MCB Step 20",
+    "unit": "°C",
+    "section": "Suhu Contactor MCB",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 55,
+    "warnMax": 70
+   },
+   {
+    "id": "cp_ar1",
+    "label": "Arus Step 1 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as1",
+    "label": "Arus Step 1 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at1",
+    "label": "Arus Step 1 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar2",
+    "label": "Arus Step 2 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as2",
+    "label": "Arus Step 2 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at2",
+    "label": "Arus Step 2 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar3",
+    "label": "Arus Step 3 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as3",
+    "label": "Arus Step 3 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at3",
+    "label": "Arus Step 3 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar4",
+    "label": "Arus Step 4 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as4",
+    "label": "Arus Step 4 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at4",
+    "label": "Arus Step 4 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar5",
+    "label": "Arus Step 5 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as5",
+    "label": "Arus Step 5 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at5",
+    "label": "Arus Step 5 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar6",
+    "label": "Arus Step 6 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as6",
+    "label": "Arus Step 6 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at6",
+    "label": "Arus Step 6 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar7",
+    "label": "Arus Step 7 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as7",
+    "label": "Arus Step 7 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at7",
+    "label": "Arus Step 7 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar8",
+    "label": "Arus Step 8 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as8",
+    "label": "Arus Step 8 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at8",
+    "label": "Arus Step 8 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar9",
+    "label": "Arus Step 9 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as9",
+    "label": "Arus Step 9 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at9",
+    "label": "Arus Step 9 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar10",
+    "label": "Arus Step 10 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as10",
+    "label": "Arus Step 10 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at10",
+    "label": "Arus Step 10 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar11",
+    "label": "Arus Step 11 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as11",
+    "label": "Arus Step 11 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at11",
+    "label": "Arus Step 11 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar12",
+    "label": "Arus Step 12 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as12",
+    "label": "Arus Step 12 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at12",
+    "label": "Arus Step 12 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar13",
+    "label": "Arus Step 13 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as13",
+    "label": "Arus Step 13 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at13",
+    "label": "Arus Step 13 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar14",
+    "label": "Arus Step 14 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as14",
+    "label": "Arus Step 14 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at14",
+    "label": "Arus Step 14 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar15",
+    "label": "Arus Step 15 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as15",
+    "label": "Arus Step 15 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at15",
+    "label": "Arus Step 15 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar16",
+    "label": "Arus Step 16 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as16",
+    "label": "Arus Step 16 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at16",
+    "label": "Arus Step 16 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar17",
+    "label": "Arus Step 17 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as17",
+    "label": "Arus Step 17 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at17",
+    "label": "Arus Step 17 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar18",
+    "label": "Arus Step 18 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as18",
+    "label": "Arus Step 18 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at18",
+    "label": "Arus Step 18 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar19",
+    "label": "Arus Step 19 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as19",
+    "label": "Arus Step 19 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at19",
+    "label": "Arus Step 19 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_ar20",
+    "label": "Arus Step 20 R",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_as20",
+    "label": "Arus Step 20 S",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_at20",
+    "label": "Arus Step 20 T",
+    "unit": "A",
+    "section": "Arus per Step",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50
+   },
+   {
+    "id": "cp_pf",
+    "label": "Cos φ Terbaca",
+    "unit": "",
+    "section": "Power Quality",
+    "type": "numeric",
+    "normalMin": 0.95,
+    "normalMax": 1,
+    "warnMin": 0.9
+   },
+   {
+    "id": "cp_step",
+    "label": "Jumlah Step Aktif",
+    "unit": "",
+    "section": "Step Status",
+    "type": "numeric",
+    "normalMin": 1,
+    "normalMax": 18,
+    "warnMin": 0,
+    "warnMax": 20
+   },
+   {
+    "id": "cp_kvar",
+    "label": "Total kVAR",
+    "unit": "kVAR",
+    "section": "Power Quality",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 1000,
+    "warnMax": 1200
+   },
+   {
+    "id": "cp_volt",
+    "label": "Tegangan",
+    "unit": "V",
+    "section": "Tegangan",
+    "type": "numeric",
+    "normalMin": 395,
+    "normalMax": 435,
+    "warnMin": 380,
+    "warnMax": 450
+   },
+   {
+    "id": "cp_mr",
+    "label": "Arus MAIN R",
+    "unit": "A",
+    "section": "Arus MAIN",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 600,
+    "warnMax": 700
+   },
+   {
+    "id": "cp_ms",
+    "label": "Arus MAIN S",
+    "unit": "A",
+    "section": "Arus MAIN",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 600,
+    "warnMax": 700
+   },
+   {
+    "id": "cp_mt",
+    "label": "Arus MAIN T",
+    "unit": "A",
+    "section": "Arus MAIN",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 600,
+    "warnMax": 700
+   },
+   {
+    "id": "cp_brs",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   }
+  ],
+  "MCC": [
+   {
+    "id": "mp1",
+    "label": "Suhu Panel (Semua Komponen)",
+    "unit": "°C",
+    "section": "Kondisi Panel",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 50,
+    "warnMax": 60
+   },
+   {
+    "id": "mp2",
+    "label": "Arus Feeder R",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 400
+   },
+   {
+    "id": "mp3",
+    "label": "Arus Feeder S",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 400
+   },
+   {
+    "id": "mp4",
+    "label": "Arus Feeder T",
+    "unit": "A",
+    "section": "Arus Feeder",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 400
+   },
+   {
+    "id": "mp5",
+    "label": "Status Breaker",
+    "unit": "",
+    "section": "Status",
+    "type": "status",
+    "options": [
+     "ON",
+     "OFF",
+     "TRIP"
+    ]
+   },
+   {
+    "id": "mp6",
+    "label": "Running Hour",
+    "unit": "jam",
+    "section": "Operasional",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 8760
+   },
+   {
+    "id": "mp7",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   }
+  ],
+  "AIR_COMPRESSOR": [
+   {
+    "id": "ac1",
+    "label": "Tekanan Udara",
+    "unit": "bar",
+    "section": "Operasional",
+    "type": "numeric",
+    "normalMin": 6,
+    "normalMax": 8,
+    "warnMin": 4,
+    "warnMax": 10
+   },
+   {
+    "id": "ac2",
+    "label": "Suhu Discharge",
+    "unit": "°C",
+    "section": "Operasional",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 80,
+    "warnMax": 95
+   },
+   {
+    "id": "ac3",
+    "label": "Arus Motor",
+    "unit": "A",
+    "section": "Operasional",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 80
+   },
+   {
+    "id": "ac4",
+    "label": "Running Hour",
+    "unit": "jam",
+    "section": "Jam Operasi",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 8000
+   },
+   {
+    "id": "ac5",
+    "label": "Level Oli",
+    "unit": "%",
+    "section": "Kondisi",
+    "type": "numeric",
+    "normalMin": 80,
+    "normalMax": 100,
+    "warnMin": 60
+   },
+   {
+    "id": "ac6",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   },
+   {
+    "id": "ac7",
+    "label": "Temuan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "NORMAL",
+     "PERLU PERHATIAN",
+     "KRITIS"
+    ]
+   }
+  ],
+  "HYDRANT": [
+   {
+    "id": "hp1",
+    "label": "Tekanan Line",
+    "unit": "bar",
+    "section": "Tekanan",
+    "type": "numeric",
+    "normalMin": 5,
+    "normalMax": 7,
+    "warnMin": 4,
+    "warnMax": 10
+   },
+   {
+    "id": "hp2",
+    "label": "Status Jockey Pump",
+    "unit": "",
+    "section": "Status Pompa",
+    "type": "status",
+    "options": [
+     "AUTO/NORMAL",
+     "MANUAL",
+     "TRIP"
+    ]
+   },
+   {
+    "id": "hp3",
+    "label": "Status Main Pump",
+    "unit": "",
+    "section": "Status Pompa",
+    "type": "status",
+    "options": [
+     "STANDBY/NORMAL",
+     "RUNNING",
+     "TRIP"
+    ]
+   },
+   {
+    "id": "hp4",
+    "label": "Status Diesel Pump",
+    "unit": "",
+    "section": "Status Pompa",
+    "type": "status",
+    "options": [
+     "STANDBY/NORMAL",
+     "RUNNING",
+     "TRIP"
+    ]
+   },
+   {
+    "id": "hp7",
+    "label": "Status Motor Pump",
+    "unit": "",
+    "section": "Status Pompa",
+    "type": "status",
+    "options": [
+     "STANDBY/NORMAL",
+     "RUNNING",
+     "TRIP"
+    ]
+   },
+   {
+    "id": "hp5",
+    "label": "Level Air Tank",
+    "unit": "%",
+    "section": "Level",
+    "type": "numeric",
+    "normalMin": 80,
+    "normalMax": 100,
+    "warnMin": 60
+   },
+   {
+    "id": "hp6",
+    "label": "Alarm System",
+    "unit": "",
+    "section": "Alarm",
+    "type": "status",
+    "options": [
+     "NORMAL/STANDBY",
+     "AKTIF/ALARM"
+    ]
+   },
+   {
+    "id": "hp8",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   },
+   {
+    "id": "hp9",
+    "label": "Temuan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "NORMAL",
+     "PERLU PERHATIAN",
+     "KRITIS"
+    ]
+   }
+  ],
+  "MINI_CHAMBER": [
+   {
+    "id": "mc1",
+    "label": "Suhu Chamber",
+    "unit": "°C",
+    "section": "Kondisi",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 60,
+    "warnMax": 75
+   },
+   {
+    "id": "mc2",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   },
+   {
+    "id": "mc3",
+    "label": "Kondisi Kabel",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BAIK",
+     "PERLU PERHATIAN",
+     "RUSAK"
+    ]
+   },
+   {
+    "id": "mc4",
+    "label": "Kondisi Busbar",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BAIK",
+     "PERLU PERHATIAN",
+     "RUSAK"
+    ]
+   },
+   {
+    "id": "mc5",
+    "label": "Temuan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "NORMAL",
+     "PERLU PERHATIAN",
+     "KRITIS"
+    ]
+   }
+  ],
+  "COLD_STORAGE": [
+   {
+    "id": "cs1",
+    "label": "Suhu Storage",
+    "unit": "°C",
+    "section": "Kondisi Ruang",
+    "type": "numeric",
+    "normalMin": -25,
+    "normalMax": 5,
+    "warnMax": 8
+   },
+   {
+    "id": "cs2",
+    "label": "Humidity Storage",
+    "unit": "%RH",
+    "section": "Kondisi Ruang",
+    "type": "numeric",
+    "normalMin": 70,
+    "normalMax": 90,
+    "warnMax": 95
+   },
+   {
+    "id": "cs3",
+    "label": "Ampere Compressor",
+    "unit": "A",
+    "section": "Kompressor",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 60,
+    "warnMax": 75
+   },
+   {
+    "id": "cs4",
+    "label": "Ampere Fan Evaporator",
+    "unit": "A",
+    "section": "Fan Evaporator",
+    "type": "numeric",
+    "normalMin": 0,
+    "normalMax": 20,
+    "warnMax": 25
+   },
+   {
+    "id": "cs5",
+    "label": "Sight Glass Liquid",
+    "unit": "",
+    "section": "Refrigerant",
+    "type": "status",
+    "options": [
+     "PENUH/NORMAL",
+     "GELEMBUNG",
+     "KOSONG"
+    ]
+   },
+   {
+    "id": "cs6",
+    "label": "Tekanan LP (Low Pressure)",
+    "unit": "bar",
+    "section": "Tekanan Refrigerant",
+    "type": "numeric",
+    "normalMin": 1.5,
+    "normalMax": 4,
+    "warnMin": 1,
+    "warnMax": 5
+   },
+   {
+    "id": "cs7",
+    "label": "Tekanan HP (High Pressure)",
+    "unit": "bar",
+    "section": "Tekanan Refrigerant",
+    "type": "numeric",
+    "normalMin": 10,
+    "normalMax": 18,
+    "warnMin": 8,
+    "warnMax": 22
+   },
+   {
+    "id": "cs8",
+    "label": "Sight Glass Level Oli Compressor",
+    "unit": "",
+    "section": "Kondisi Oli",
+    "type": "status",
+    "options": [
+     "NORMAL",
+     "RENDAH",
+     "KRITIS"
+    ]
+   },
+   {
+    "id": "cs9",
+    "label": "Sight Glass Pelampung Refrigerant",
+    "unit": "",
+    "section": "Refrigerant",
+    "type": "status",
+    "options": [
+     "NORMAL",
+     "RENDAH",
+     "KRITIS"
+    ]
+   },
+   {
+    "id": "cs10",
+    "label": "Kebersihan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "BERSIH",
+     "KOTOR RINGAN",
+     "KOTOR BERAT"
+    ]
+   },
+   {
+    "id": "cs11",
+    "label": "Temuan",
+    "unit": "",
+    "section": "Kondisi Fisik",
+    "type": "status",
+    "options": [
+     "NORMAL",
+     "PERLU PERHATIAN",
+     "KRITIS"
+    ]
+   }
+  ],
+  "OTHER": []
+ }
+}

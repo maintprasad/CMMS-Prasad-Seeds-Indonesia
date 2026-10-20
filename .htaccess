@@ -1,0 +1,11 @@
+Options -Indexes
+<FilesMatch "^\.|\.(db|db-wal|db-shm|db-journal|sqlite|md|log|sql)$">
+    Require all denied
+</FilesMatch>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(database|scripts|api/_lib|api/modules|api/migrations)(/|$) - [F,L]
+</IfModule>
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-store" "expr=%{REQUEST_URI} =~ m#/api/#"
+</IfModule>
