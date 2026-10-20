@@ -278,3 +278,5 @@ body, .card, .sidenav-menu, .app-topbar, input, select, textarea { transition: b
 .nt-item.danger .nt-ico { background: rgba(var(--ct-danger-rgb), .15); color: var(--ct-danger); } .nt-item.warn .nt-ico { background: rgba(var(--ct-warning-rgb), .2); color: var(--ct-warning); }
 .nt-text { flex: 1; font-size: 13px; } .nt-count { font-size: 14px; }
 @media (max-width: 480px) { .nt-menu { position: fixed !important; left: 8px !important; right: 8px !important; top: 64px !important; min-width: 0; transform: none !important; } }
+
+.pwa-install[hidden] { display: none; }

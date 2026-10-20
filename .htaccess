@@ -6,6 +6,8 @@ Options -Indexes
     RewriteEngine On
     RewriteRule ^(database|scripts|api/_lib|api/modules|api/migrations)(/|$) - [F,L]
 </IfModule>
+AddType application/manifest+json .webmanifest
 <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache" "expr=%{REQUEST_URI} =~ m#/(sw.js|manifest.webmanifest)$#"
     Header set Cache-Control "no-store" "expr=%{REQUEST_URI} =~ m#/api/#"
 </IfModule>

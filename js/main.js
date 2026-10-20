@@ -181,6 +181,7 @@ function showShell() {
 
   userMenu.append(
     h('div', { class: 'dropdown-header noti-title' }, h('h6', { class: 'text-overflow m-0' }, user.name), h('small', { class: 'text-muted' }, roleLabel(user.role))),
+    h('a', { href: 'javascript:void(0)', class: 'dropdown-item pwa-install', hidden: !installEvent, onclick: () => { userMenu.classList.remove('show'); installApp(); } }, h('i', { class: 'ti ti-device-mobile-down me-1 fs-16 align-middle' }), h('span', { class: 'align-middle' }, 'Pasang aplikasi')),
     h('a', { href: '#/st/account', class: 'dropdown-item', onclick: () => userMenu.classList.remove('show') }, h('i', { class: 'ti ti-user-circle me-1 fs-16 align-middle' }), h('span', { class: 'align-middle' }, 'Akun Saya')),
     h('div', { class: 'dropdown-divider' }),
     h('a', { href: 'javascript:void(0)', class: 'dropdown-item text-danger fw-semibold', onclick: async () => { try { await api.post('auth/logout'); } catch { /* sudah keluar */ } session.token = null; location.hash = ''; location.reload(); } },
@@ -226,6 +227,15 @@ function showShell() {
     bell.cleanup();
   };
   render();
+}
+
+// ── PWA: service worker + tombol "Pasang aplikasi" ──
+let installEvent = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvent = e; document.querySelector('.pwa-install')?.removeAttribute('hidden'); });
+window.addEventListener('appinstalled', () => { installEvent = null; document.querySelector('.pwa-install')?.setAttribute('hidden', ''); });
+export const installApp = async () => { if (!installEvent) return; installEvent.prompt(); await installEvent.userChoice.catch(() => null); installEvent = null; document.querySelector('.pwa-install')?.setAttribute('hidden', ''); };
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* PWA opsional */ }));
 }
 
 boot();

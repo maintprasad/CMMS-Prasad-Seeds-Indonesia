@@ -1,0 +1,23 @@
+{
+  "name": "CMMS — Computerized Maintenance Management System",
+  "short_name": "CMMS",
+  "description": "Work Order, Daily Monitoring, Preventive Maintenance, MaintWare dan Equipment Database.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "id",
+  "background_color": "#14161d",
+  "theme_color": "#14161d",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Progress WO", "url": "./#/wo/list", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Input PM", "url": "./#/pm/input", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Monitor", "url": "./#/dm/monitor", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

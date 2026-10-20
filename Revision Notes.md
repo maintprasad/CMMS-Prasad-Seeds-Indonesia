@@ -307,3 +307,21 @@ Permintaan: setup Turso/Vercel dan dukungan MySQL agar aplikasi bisa dipasang di
 - Belum diuji: MySQL 8 (bukan MariaDB), deploy Vercel dengan Turso (kode siap, env perlu diisi di Vercel), performa MySQL jarak jauh.
 
 **Nomor versi terbaru:** 1.2
+
+## 2026-10-20 (12)
+
+**Version:** 1.3
+
+**Penyebab revisi:**
+Permintaan: CMMS bisa dipasang sebagai PWA dengan ikon dari gambar "Vintage Gear and Screwdriver Sticker".
+
+**Metode revisi:**
+- `manifest.webmanifest` (standalone, ikon 192/512 + maskable, shortcut Progress WO / Input PM / Monitor), `sw.js` (service worker: `/api/` tidak pernah di-cache; HTML/JS/CSS jaringan-dulu dengan cadangan cache; aset gambar/font/pustaka cache-dulu), pendaftaran SW di `js/main.js`, tombol **Pasang aplikasi** di menu pengguna (muncul saat browser menganggap aplikasi layak dipasang).
+- Ikon dibuat dari gambar sumber (latar disamakan dengan warna tepi gambar #f9f9f7): `assets/icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (skala 74% agar aman dipotong), `apple-touch-icon.png`, `favicon-32.png`/`64`. Gambar sumber (PNG 1254×1254, bukan JPG) tidak ikut repo.
+- `.htaccess` dan `vercel.json`: sw.js & manifest tanpa cache panjang, tipe `application/manifest+json`.
+
+**Hasil revisi:**
+- Uji Chrome: SW terdaftar & aktif, manifest valid (3 ikon), semua ikon terunduh, tombol "Pasang aplikasi" muncul (browser memicu `beforeinstallprompt` = memenuhi syarat PWA), tanpa error konsol.
+- Belum teruji: cache offline — Cache Storage pada profil Chrome headless di komputer ini menolak semua penulisan ("Entry already exists", termasuk `put` data sepele), jadi perilaku offline perlu dicoba di Chrome biasa (matikan jaringan → buka aplikasi).
+
+**Nomor versi terbaru:** 1.3

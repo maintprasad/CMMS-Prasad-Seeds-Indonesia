@@ -4,5 +4,5 @@
   "functions": {
     "api/index.php": { "runtime": "vercel-php@0.9.0", "includeFiles": "api/**", "maxDuration": 30 }
   },
-  "headers": [{ "source": "/api/(.*)", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }]
+  "headers": [{ "source": "/(sw.js|manifest.webmanifest)", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }, { "source": "/api/(.*)", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }]
 }
