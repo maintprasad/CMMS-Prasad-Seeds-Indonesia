@@ -1,0 +1,8 @@
+# Tidak perlu ikut di-deploy ke Vercel
+database/
+scripts/
+.env
+.env.*
+*.md
+.htaccess
+**/.htaccess

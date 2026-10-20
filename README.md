@@ -17,7 +17,14 @@ Database (SQLite / Turso)  ←  Backend PHP (api/index.php?r=…)  →  Frontend
 `php scripts/test-e2e.php` — tes end-to-end dengan data acak pada database sementara.
 
 ## Turso / Vercel
-Isi `TURSO_DATABASE_URL` dan `TURSO_AUTH_TOKEN` (Environment Variables di Vercel atau `.env`), lalu jalankan `php scripts/migrate.php` dan `php scripts/import-equipment.php`. Tambahkan `--env=.env.turso` untuk memakai file env lain.
+1. Buat database di https://turso.tech (dashboard → Create Database), lalu ambil **URL** (`libsql://…turso.io`) dan buat **token** (Database → Create Token, read & write).
+2. Isi `.env.turso` (salinan `.env.turso.example`, tidak ikut git): `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `ADMIN_PASSWORD`.
+3. Cek koneksi: `php scripts/db-check.php --env=.env.turso`
+4. Pasang skema + salin data lokal: `php scripts/copy-db.php --env=.env.turso` (tambah `--force` bila tujuan sudah berisi data; jumlah baris tiap tabel diverifikasi). Hanya skema: `php scripts/migrate.php --env=.env.turso`.
+5. Jalankan lokal ke Turso (opsional): `.env.turso` bisa dipakai sebagai `.env` sementara.
+6. Deploy Vercel: import repo di Vercel (Framework: Other), isi Environment Variables `DB_DRIVER=turso`, `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `APP_TIMEZONE=Asia/Jakarta`. `vercel.json` memakai runtime `vercel-php`; `.vercelignore` mengecualikan database/ dan scripts/. Foto & lampiran WO tersimpan di database (base64), jadi tidak butuh disk Vercel.
+
+Catatan: akun demo (`seed-demo.php`) ikut tersalin bila ada di lokal — hapus/ubah passwordnya sebelum dipakai produksi.
 
 ## Struktur
 - `api/_lib/` — Env, Http, Database (+ driver SQLite/Turso), Migrator, Auth
