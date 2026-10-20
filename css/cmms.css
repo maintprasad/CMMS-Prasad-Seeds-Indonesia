@@ -251,9 +251,10 @@ body, .card, .sidenav-menu, .app-topbar, input, select, textarea { transition: b
 .rp-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 @media (max-width: 640px) { .rp-actions { width: 100%; } .rp-actions .btn { flex: 1 1 auto; } }
 
-.gs-box { position: relative; flex: 1 1 280px; max-width: 460px; margin: 0 12px; }
-.gs-ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-.gs-input { padding-left: 2.2rem !important; border-radius: 30px !important; height: 38px; }
+.gs-box { position: relative; align-self: center; height: 38px; flex: 1 1 280px; max-width: 460px; margin: 0 12px; }
+.gs-ico { position: absolute; left: 14px; top: 0; height: 38px; display: flex; align-items: center; font-size: 16px; line-height: 1; color: var(--muted); pointer-events: none; z-index: 1; }
+.gs-input { padding: 0 1rem 0 2.5rem !important; border-radius: 30px !important; height: 38px; line-height: 38px; }
+.gs-input::-webkit-search-cancel-button { margin-right: -4px; }
 .gs-panel { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 1080; max-height: 70vh; overflow-y: auto; background: var(--ct-custom-bg, #131317); border: 1px solid var(--ct-border-color); border-radius: var(--ct-border-radius); box-shadow: 0 12px 32px rgba(0, 0, 0, .22); padding: 6px; animation: fadeIn .18s both; }
 [data-bs-theme=light] .gs-panel { background: #fff; }
 .rp-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 16px 0 10px; } .rp-filters input, .rp-filters select { width: auto; flex: 0 1 170px; min-width: 0; }
