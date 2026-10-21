@@ -312,3 +312,6 @@ html[data-sidenav-size=condensed] .sidenav-menu, html[data-sidenav-size=condense
 /* sidepanel ringkas: submenu tampil sebagai flyout saat disorot (animasi lipat tidak berlaku) */
 html[data-sidenav-size=condensed] .side-nav .side-nav-item:hover > .collapse > .sub-menu { visibility: visible !important; transition: none; overflow: visible; }
 html[data-sidenav-size=condensed] .side-nav .collapse > .sub-menu { max-height: calc(100vh - 100px); overflow-y: auto; }
+/* sidepanel ringkas tetap di tempat saat halaman di-scroll (bawaan template: absolute → ikut tergulung) */
+html[data-sidenav-size=condensed]:not([data-layout=topnav]) .sidenav-menu { position: fixed; top: 0; bottom: 0; left: 0; height: 100vh; }
+html[data-sidenav-size=condensed]:not([data-layout=topnav]) .page-content { min-height: 0; }
