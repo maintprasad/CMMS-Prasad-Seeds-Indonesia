@@ -377,3 +377,24 @@ Pemindahan menu laporan ke grup Report (v1.5) membuat menu Work Order dan Preven
 - Semua halaman terbuka tanpa error dan menandai menu yang benar sebagai aktif.
 
 **Nomor versi terbaru:** 1.5.1
+
+## 2026-10-21 (4)
+
+**Version:** 1.6
+
+**Penyebab revisi:**
+Permintaan: setiap inputan di MaintWare harus mencantumkan nama Unit sebagai identitas tempat utamanya.
+
+**Metode revisi:**
+- **Item (material / sparepart):** Unit wajib saat tambah maupun edit (400 bila kosong / tidak dikenal); stok awal tercatat dengan Unit item. Daftar item punya kolom **Unit**, filter Unit, chip **Tanpa unit**, dan detail item menampilkan Unit.
+- **Stock IN / OUT:** Unit wajib untuk IN dan OUT (default = Unit item, bisa diganti); Area/Equipment opsional dan harus milik Unit yang sama (400 bila beda). Stock Log dan Reorder List menampilkan kolom Unit.
+- **Purchase Request:** migrasi `008_mw_unit` (`mw_ro.unit_id`, SQLite + MySQL; sudah terpasang di lokal, MariaDB, dan Turso); Unit wajib, tampil di kartu, rincian, dan cetakan RO.
+- **Atur Unit massal** (Admin/SPV): menerapkan Unit ke semua item yang cocok dengan filter aktif (mis. "Tanpa unit"), transaksi lama yang belum bertanda Unit ikut diisi; ditolak bila tanpa filter agar tidak mengubah semua item sekaligus.
+- Filter pemilih "Parts Used" Work Order sekarang hanya menampilkan item milik Unit WO tersebut (ditambah item lama tanpa unit).
+
+**Hasil revisi:**
+- Tes e2e 249 lulus di SQLite dan MariaDB (12 pemeriksaan baru: Unit wajib di item/stok/RO, Unit tidak dikenal, equipment beda Unit, filter ketat & tanpa unit, atur massal beserta hak aksesnya).
+- Uji UI Chrome: kolom/filter Unit, dialog item, dialog stok, dan dialog RO memuat field Unit wajib.
+- **Data lama:** 343 item dan 424 transaksi hasil impor belum punya Unit — tampil "Belum ada"; perlu dilengkapi lewat chip "Tanpa unit" + "Atur Unit massal" atau edit satu per satu.
+
+**Nomor versi terbaru:** 1.6

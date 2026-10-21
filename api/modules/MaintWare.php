@@ -37,6 +37,13 @@ final class MaintWareApi
             $where[] = '(unit_id = ? OR unit_id IS NULL)'; // item tanpa unit = gudang bersama
             $p[] = $unit;
         }
+        if (($strict = (int) Http::query('unit', '0')) > 0) {
+            $where[] = 'unit_id = ?';
+            $p[] = $strict;
+        }
+        if (Http::query('nounit') === '1') {
+            $where[] = 'unit_id IS NULL';
+        }
         foreach (['item_type' => 'type', 'item_class' => 'class', 'moving_type' => 'moving'] as $col => $param) {
             if (($v = Http::query($param, '')) !== '') {
                 $where[] = "$col = ?";
@@ -61,6 +68,7 @@ final class MaintWareApi
         $total = (int) Db::query("SELECT COUNT(*) c FROM mw_items $w", $p)[0]['c'];
         $rows = Db::query(
             "SELECT id, name, brand, spec, item_type, item_class, moving_type, uom, unit_id, qty, min_stock, price, pic, notes, updated_at,
+                    (SELECT name FROM units WHERE units.id = mw_items.unit_id) AS unit_name,
                     (SELECT COUNT(*) FROM mw_item_photos ph WHERE ph.item_id = mw_items.id) AS has_photo
              FROM mw_items $w ORDER BY $sort $dir, id LIMIT $limit OFFSET $offset",
             $p
@@ -72,6 +80,7 @@ final class MaintWareApi
     {
         Auth::requireRole(...self::STAFF);
         $item = self::find((string) Http::query('id', ''));
+        $item['unit_name'] = $item['unit_id'] ? (Db::query('SELECT name FROM units WHERE id = ?', [$item['unit_id']])[0]['name'] ?? null) : null;
         $item['has_photo'] = Db::query('SELECT 1 FROM mw_item_photos WHERE item_id = ?', [$item['id']]) ? 1 : 0;
         return [
             'item' => $item,
@@ -107,9 +116,13 @@ final class MaintWareApi
         if ($name === '' || $type === '' || $class === '' || $pic === '' || !in_array($moving, self::MOVING, true)) {
             throw new HttpError('Nama, type, class, moving type, dan PIC wajib diisi.');
         }
+        $unitId = (int) ($in['unit_id'] ?? 0);
+        if ($unitId <= 0 || !Db::query('SELECT 1 FROM units WHERE id = ?', [$unitId])) {
+            throw new HttpError('Unit wajib diisi — pilih Unit tempat material / sparepart ini berada.');
+        }
         $vals = [$name, trim((string) ($in['brand'] ?? '')) ?: null, trim((string) ($in['spec'] ?? '')) ?: null, $type, $class, $moving,
             trim((string) ($in['uom'] ?? '')) ?: 'pcs', max(0, (float) ($in['price'] ?? 0)), max(0, (float) ($in['min_stock'] ?? 0)),
-            $pic, trim((string) ($in['notes'] ?? '')) ?: null, ($u = (int) ($in['unit_id'] ?? 0)) > 0 ? $u : null, now()];
+            $pic, trim((string) ($in['notes'] ?? '')) ?: null, $unitId, now()];
         $id = (string) ($in['id'] ?? '');
         $photo = self::photoStatement((string) ($in['photo'] ?? ''), (string) ($in['photo_mime'] ?? ''));
         if ($id !== '') {
@@ -124,7 +137,7 @@ final class MaintWareApi
         $qty = max(0, (float) ($in['qty'] ?? 0));
         $st = [['INSERT INTO mw_items (name, brand, spec, item_type, item_class, moving_type, uom, price, min_stock, pic, notes, unit_id, updated_at, id, qty) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)', [...$vals, $id]]];
         if ($qty > 0) {
-            $st = array_merge($st, self::stockStatements(['id' => $id, 'qty' => 0], 'IN', $qty, ['pic' => $pic, 'notes' => 'Stok awal', 'by' => $me['name']]));
+            $st = array_merge($st, self::stockStatements(['id' => $id, 'qty' => 0], 'IN', $qty, ['pic' => $pic, 'notes' => 'Stok awal', 'by' => $me['name'], 'unit_id' => $unitId]));
         }
         Db::transaction([...$st, ...self::photoWrite($id, $photo)]);
         return ['id' => $id];
@@ -180,6 +193,42 @@ final class MaintWareApi
         exit;
     }
 
+    /** Atur Unit massal untuk semua item yang cocok dengan filter daftar (mis. "Tanpa unit"); transaksi lama tanpa unit ikut diisi. */
+    public static function bulkUnit(): array
+    {
+        Auth::requireRole('admin', 'spv');
+        $in = Http::body();
+        $unit = (int) ($in['unit_id'] ?? 0);
+        if ($unit <= 0 || !Db::query('SELECT 1 FROM units WHERE id = ?', [$unit])) {
+            throw new HttpError('Pilih Unit tujuan.');
+        }
+        $where = [];
+        $p = [];
+        foreach (['item_type' => 'type', 'item_class' => 'class', 'moving_type' => 'moving'] as $col => $k) {
+            if (($v = trim((string) ($in[$k] ?? ''))) !== '') {
+                $where[] = "$col = ?";
+                $p[] = $v;
+            }
+        }
+        if (!empty($in['nounit'])) {
+            $where[] = 'unit_id IS NULL';
+        }
+        if (($q = trim((string) ($in['q'] ?? ''))) !== '') {
+            $where[] = '(name LIKE ? OR id LIKE ? OR spec LIKE ? OR brand LIKE ? OR pic LIKE ? OR notes LIKE ?)';
+            array_push($p, ...array_fill(0, 6, "%$q%"));
+        }
+        if (!$where) {
+            throw new HttpError('Tentukan filter dulu (mis. Tanpa unit) agar tidak mengubah seluruh item sekaligus.');
+        }
+        $w = implode(' AND ', $where);
+        $n = (int) Db::query("SELECT COUNT(*) c FROM mw_items WHERE $w", $p)[0]['c'];
+        Db::transaction([
+            ['UPDATE mw_transactions SET unit_id = ? WHERE unit_id IS NULL AND item_id IN (SELECT id FROM mw_items WHERE ' . $w . ')', [$unit, ...$p]],
+            ["UPDATE mw_items SET unit_id = ?, updated_at = ? WHERE $w", [$unit, now(), ...$p]],
+        ]);
+        return ['updated' => $n];
+    }
+
     public static function deleteItem(): array
     {
         Auth::requireRole('admin');
@@ -206,6 +255,7 @@ final class MaintWareApi
             throw new HttpError('Tipe, jumlah (> 0), dan PIC wajib diisi.');
         }
         $ctx = ['pic' => $pic, 'notes' => trim((string) ($in['notes'] ?? '')) ?: null, 'by' => $me['name']];
+        $unit = (int) ($in['unit_id'] ?? 0);
         if ($type === 'OUT') {
             $eq = (int) ($in['equipment_id'] ?? 0);
             if ($eq > 0) {
@@ -217,6 +267,15 @@ final class MaintWareApi
             } elseif (($a = (int) ($in['area_id'] ?? 0)) > 0) {
                 $ctx += ['area_id' => $a, 'unit_id' => (int) (Db::query('SELECT unit_id FROM areas WHERE id = ?', [$a])[0]['unit_id'] ?? 0) ?: null];
             }
+            if ($unit > 0 && isset($ctx['unit_id']) && $ctx['unit_id'] && $ctx['unit_id'] !== $unit) {
+                throw new HttpError('Area / equipment yang dipilih bukan milik Unit tersebut.');
+            }
+        }
+        if (empty($ctx['unit_id'])) {
+            $ctx['unit_id'] = $unit > 0 ? $unit : ((int) ($item['unit_id'] ?? 0) ?: null);
+        }
+        if (empty($ctx['unit_id']) || !Db::query('SELECT 1 FROM units WHERE id = ?', [$ctx['unit_id']])) {
+            throw new HttpError('Unit wajib diisi untuk setiap transaksi stok.');
         }
         $st = self::stockStatements($item, $type, $qty, $ctx);
         Db::transaction($st);
@@ -343,8 +402,11 @@ final class MaintWareApi
     public static function reorder(): array
     {
         Auth::requireRole(...self::STAFF);
+        $unit = (int) Http::query('unit', '0');
         return ['rows' => Db::query(
-            'SELECT id, name, brand, spec, item_type, uom, qty, min_stock, price, (min_stock - qty) AS gap FROM mw_items WHERE qty < min_stock ORDER BY (min_stock - qty) DESC, name'
+            'SELECT id, name, brand, spec, item_type, uom, qty, min_stock, price, unit_id, (SELECT name FROM units WHERE units.id = mw_items.unit_id) AS unit_name, (min_stock - qty) AS gap
+             FROM mw_items WHERE qty < min_stock' . ($unit > 0 ? ' AND unit_id = ?' : '') . ' ORDER BY (min_stock - qty) DESC, name',
+            $unit > 0 ? [$unit] : []
         )];
     }
 
@@ -366,7 +428,7 @@ final class MaintWareApi
     {
         Auth::requireRole(...self::STAFF);
         $status = Http::query('status', '');
-        $rows = Db::query('SELECT * FROM mw_ro' . ($status !== '' ? ' WHERE status = ?' : '') . ' ORDER BY created_at DESC', $status !== '' ? [$status] : []);
+        $rows = Db::query('SELECT r.*, (SELECT name FROM units WHERE units.id = r.unit_id) AS unit_name FROM mw_ro r' . ($status !== '' ? ' WHERE r.status = ?' : '') . ' ORDER BY r.created_at DESC', $status !== '' ? [$status] : []);
         $items = [];
         foreach (Db::query('SELECT * FROM mw_ro_items ORDER BY id') as $it) {
             $items[$it['ro_no']][] = $it;
@@ -387,6 +449,10 @@ final class MaintWareApi
         if ($pic === '' || $dept === '') {
             throw new HttpError('PIC dan departemen wajib diisi.');
         }
+        $roUnit = (int) ($in['unit_id'] ?? 0);
+        if ($roUnit <= 0 || !Db::query('SELECT 1 FROM units WHERE id = ?', [$roUnit])) {
+            throw new HttpError('Unit wajib diisi pada Purchase Request.');
+        }
         $items = [];
         foreach ((array) ($in['items'] ?? []) as $it) {
             $name = trim((string) ($it['name'] ?? ''));
@@ -405,7 +471,7 @@ final class MaintWareApi
         $draft = ($in['status'] ?? '') === 'Draft';
         $st = [];
         $vals = [trim((string) ($in['date'] ?? '')) ?: date('Y-m-d'), $pic, $dept, trim((string) ($in['notes'] ?? '')) ?: null,
-            in_array($in['priority'] ?? '', ['Normal', 'Urgent', 'Critical'], true) ? $in['priority'] : 'Normal', trim((string) ($in['needed_date'] ?? '')) ?: null, $total];
+            in_array($in['priority'] ?? '', ['Normal', 'Urgent', 'Critical'], true) ? $in['priority'] : 'Normal', trim((string) ($in['needed_date'] ?? '')) ?: null, $total, $roUnit];
         if ($no !== '') {
             $cur = Db::query('SELECT status FROM mw_ro WHERE ro_no = ?', [$no])[0] ?? null;
             if (!$cur) {
@@ -414,12 +480,12 @@ final class MaintWareApi
             if (!in_array($cur['status'], ['Draft', 'Open'], true)) {
                 throw new HttpError('RO yang sudah disetujui tidak bisa diedit.', 409);
             }
-            $st[] = ['UPDATE mw_ro SET ro_date=?, pic=?, dept=?, notes=?, priority=?, needed_date=?, total_est=?, status=?, updated_at=? WHERE ro_no=?',
+            $st[] = ['UPDATE mw_ro SET ro_date=?, pic=?, dept=?, notes=?, priority=?, needed_date=?, total_est=?, unit_id=?, status=?, updated_at=? WHERE ro_no=?',
                 [...$vals, $draft ? 'Draft' : 'Open', $ts, $no]];
             $st[] = ['DELETE FROM mw_ro_items WHERE ro_no = ?', [$no]];
         } else {
             $no = self::nextRoNo();
-            $st[] = ['INSERT INTO mw_ro (ro_date, pic, dept, notes, priority, needed_date, total_est, status, created_by, created_at, updated_at, ro_no) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+            $st[] = ['INSERT INTO mw_ro (ro_date, pic, dept, notes, priority, needed_date, total_est, unit_id, status, created_by, created_at, updated_at, ro_no) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [...$vals, $draft ? 'Draft' : 'Open', $me['name'], $ts, $ts, $no]];
         }
         foreach ($items as [$name, $iid, $spec, $qty, $price]) {

@@ -84,15 +84,16 @@ export async function itemDialog(item, { units, user }, done) {
     { name: 'price', label: 'Harga beli (Rp)', type: 'number', min: 0, step: 'any' },
     { name: 'min_stock', label: 'Min stok', type: 'number', min: 0, step: 'any' },
     ...(isEdit ? [] : [{ name: 'qty', label: 'Stok awal', type: 'number', min: 0, step: 'any', default: 0 }]),
-    { name: 'unit_id', label: 'Unit gudang', type: 'select', optional: true, options: units.map((u) => ({ value: u.id, label: u.name })) },
+    { name: 'unit_id', label: 'Unit (lokasi utama)', type: 'select', required: true, options: units.map((u) => ({ value: u.id, label: u.name })) },
     { name: 'pic', label: 'PIC', required: true, default: user.name },
     { name: 'notes', label: 'Catatan', type: 'textarea', wide: true },
-  ], { moving_type: 'Fast Moving', uom: 'pcs', ...(item || {}) });
+  ], { moving_type: 'Fast Moving', uom: 'pcs', unit_id: user.unit_id ?? '', ...(item || {}), ...(item && !item.unit_id ? { unit_id: '' } : {}) });
   f.node.prepend(ph.node);
   modal(isEdit ? `Edit item ${item.id}` : 'Tambah item', f.node, { wide: true, actions: [
     { label: 'Batal', run: () => {} },
     { label: isEdit ? 'Simpan' : 'Tambah item', kind: 'primary', run: async () => {
       const photo = ph.get();
+      if (!f.values().unit_id) { await attempt(async () => { throw new Error('Unit wajib diisi — pilih Unit tempat material / sparepart ini berada.'); }); return false; }
       if (!isEdit && !photo) { await attempt(async () => { throw new Error('Foto item wajib diisi untuk material / sparepart baru.'); }); return false; }
       const r = await attempt(() => api.post('mw/item/save', { id: item?.id, ...f.values(), ...(photo ? { photo: photo.b64, photo_mime: photo.mime } : {}) }), isEdit ? 'Item diperbarui.' : 'Item ditambahkan.');
       if (!r) return false;
@@ -114,15 +115,17 @@ export function stockDialog(item, { units, areas, user }, done, type = 'IN') {
   const qty = h('input', { type: 'number', min: '0', step: 'any', placeholder: '0' });
   const pic = h('input', { value: user.name });
   const notes = h('textarea', { rows: 2, placeholder: 'Catatan / keperluan' });
-  const unit = h('select', {}, h('option', { value: '' }, '— Unit —'), units.map((u) => h('option', { value: u.id }, u.name)));
+  const unit = h('select', {}, h('option', { value: '' }, '— pilih Unit —'), units.map((u) => h('option', { value: u.id }, u.name)));
   const area = h('select', {}, h('option', { value: '' }, '— Area —'));
   const eq = h('select', {}, h('option', { value: '' }, '— Equipment —'));
   const preview = h('div', { class: 'muted' });
   const outBox = h('div', { class: 'form-grid' },
-    h('label', { class: 'field' }, h('span', {}, 'Unit'), unit), h('label', { class: 'field' }, h('span', {}, 'Area'), area),
-    h('label', { class: 'field wide' }, h('span', {}, 'Equipment (Equipment Database)'), eq));
+    h('label', { class: 'field' }, h('span', {}, 'Area (opsional)'), area),
+    h('label', { class: 'field' }, h('span', {}, 'Equipment (opsional)'), eq));
 
+  const applyUnit = (u) => { unit.value = String(u || ''); unit.onchange?.(); };
   const showInfo = () => {
+    if (cur) applyUnit(cur.unit_id || user.unit_id);
     info.replaceChildren(cur ? h('span', {}, h('b', {}, `${cur.id} — ${cur.name}`), h('div', { class: 'muted' }, `${[cur.brand, cur.spec].filter(Boolean).join(' · ') || '—'} · stok ${num(cur.qty)} ${cur.uom}`)) : h('span', { class: 'muted' }, 'Pilih item dulu.'));
     upd();
   };
@@ -153,14 +156,15 @@ export function stockDialog(item, { units, areas, user }, done, type = 'IN') {
   const body = h('div', {},
     item ? null : h('div', { class: 'toolbar' }, search, pick),
     info, h('div', { style: 'height:12px' }),
-    h('div', { class: 'form-grid' }, h('label', { class: 'field' }, h('span', {}, 'Tipe'), typeSel), h('label', { class: 'field' }, h('span', {}, 'Jumlah *'), qty),
+    h('div', { class: 'form-grid' }, h('label', { class: 'field' }, h('span', {}, 'Tipe'), typeSel), h('label', { class: 'field' }, h('span', {}, 'Unit *'), unit), h('label', { class: 'field' }, h('span', {}, 'Jumlah *'), qty),
       h('label', { class: 'field' }, h('span', {}, 'PIC *'), pic), h('label', { class: 'field' }, h('span', {}, 'Catatan'), notes)),
     h('div', { style: 'height:12px' }), outBox, h('div', { style: 'margin-top:10px' }, preview));
   modal(item ? `Update stok · ${item.id}` : 'Stock IN / OUT', body, { wide: true, actions: [
     { label: 'Batal', run: () => {} },
     { label: 'Konfirmasi', kind: 'primary', run: async () => {
       if (!cur) { await attempt(() => { throw new Error('Pilih item terlebih dahulu.'); }); return false; }
-      const r = await attempt(() => api.post('mw/stock', { item_id: cur.id, type: typeSel.value, qty: Number(qty.value), pic: pic.value, notes: notes.value, equipment_id: Number(eq.value) || undefined, area_id: Number(area.value) || undefined }),
+      if (!unit.value) { await attempt(() => { throw new Error('Unit wajib dipilih.'); }); return false; }
+      const r = await attempt(() => api.post('mw/stock', { item_id: cur.id, unit_id: Number(unit.value), type: typeSel.value, qty: Number(qty.value), pic: pic.value, notes: notes.value, equipment_id: Number(eq.value) || undefined, area_id: Number(area.value) || undefined }),
         `Stock ${typeSel.value} ${qty.value} ${cur.uom} tercatat.`);
       if (!r) return false;
       done?.();
@@ -170,5 +174,5 @@ export function stockDialog(item, { units, areas, user }, done, type = 'IN') {
   if (!item) doSearch();
 }
 
-export const trxWhere = (t) => [t.unit_name, t.area_name, t.equipment_name].filter(Boolean).join(' › ');
+export const trxWhere = (t) => [t.area_name, t.equipment_name].filter(Boolean).join(' › ');
 export { dt };

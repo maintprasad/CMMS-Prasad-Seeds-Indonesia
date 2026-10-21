@@ -19,6 +19,7 @@ export default async function render(root, { user }) {
     h('div', { style: 'height:14px' }),
     table([
       { label: 'Kode', render: (i) => h('span', { class: 'mono' }, i.id) },
+      { label: 'Unit', render: (i) => i.unit_name || '—' },
       { label: 'Item', render: (i) => h('div', {}, h('b', {}, i.name), h('div', { class: 'muted' }, [i.brand, i.spec].filter(Boolean).join(' · ') || '—')) },
       { label: 'Type', key: 'item_type' },
       { label: 'Stok', cls: 'num', render: (i) => h('span', { style: `color:var(--red);font-weight:700` }, `${num(i.qty)} ${i.uom}`) },

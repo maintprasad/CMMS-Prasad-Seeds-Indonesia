@@ -18,6 +18,7 @@ export default async function render(root) {
     count.textContent = `${r.total} transaksi`;
     host.replaceChildren(table([
       { label: 'Waktu', render: (t) => h('span', { class: 'mono' }, dt(t.trx_date)) },
+      { label: 'Unit', render: (t) => t.unit_name || '—' },
       { label: 'Kode', render: (t) => h('span', { class: 'mono' }, t.item_id) },
       { label: 'Item', render: (t) => h('div', {}, t.item_name, h('div', { class: 'muted' }, [t.brand, t.item_type].filter(Boolean).join(' · '))) },
       { label: 'TX', render: (t) => trxBadge(t.trx_type) },

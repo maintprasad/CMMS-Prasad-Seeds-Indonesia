@@ -6,7 +6,7 @@ const PAGE = 25;
 
 export default async function render(root, { user, meta, query }) {
   const m = await mwMeta();
-  const f = { q: '', type: '', class: '', moving: '', low: query.low || '', photo: query.photo || '' };
+  const f = { q: '', type: '', class: '', moving: '', low: query.low || '', photo: query.photo || '', unit: query.unit || '', nounit: query.nounit || '' };
   f.q = query.q || '';
   let page = 0, sort = 'id', dir = 'asc';
   const host = h('div');
@@ -16,10 +16,11 @@ export default async function render(root, { user, meta, query }) {
   const canDelete = user.role === 'admin';
 
   const load = async () => {
-    const r = await api.get('mw/items', { q: f.q, type: f.type, class: f.class, moving: f.moving, low: f.low, photo: f.photo, sort, dir, limit: PAGE, offset: page * PAGE });
+    const r = await api.get('mw/items', { q: f.q, type: f.type, class: f.class, moving: f.moving, low: f.low, photo: f.photo, unit: f.unit, nounit: f.nounit, sort, dir, limit: PAGE, offset: page * PAGE });
     const th = (label, key) => h('span', { style: 'cursor:pointer', onclick: () => { dir = sort === key && dir === 'asc' ? 'desc' : 'asc'; sort = key; load(); } }, label + (sort === key ? (dir === 'asc' ? ' ▲' : ' ▼') : ''));
     host.replaceChildren(table([
       { label: th('Kode', 'id'), title: 'Kode', render: (i) => h('span', { class: 'mono' }, i.id) },
+      { label: 'Unit', render: (i) => (i.unit_name ? h('span', { class: 'badge prog' }, i.unit_name) : h('span', { class: 'badge prio-critical', title: 'Belum ada Unit — edit item untuk melengkapi' }, 'Belum ada')) },
       { label: th('Item', 'name'), title: 'Item', render: (i) => h('div', {}, h('b', {}, i.name), h('div', { class: 'muted' }, [i.brand, i.spec].filter(Boolean).join(' · ') || '—')) },
       { label: 'Type / Class', render: (i) => h('div', {}, i.item_type || '—', h('div', { class: 'muted' }, i.item_class || '')) },
       { label: 'Moving', render: (i) => movingBadge(i.moving_type) },
@@ -46,6 +47,22 @@ export default async function render(root, { user, meta, query }) {
   const sel = (label, key, values) => h('select', { 'aria-label': label, onchange: (e) => { f[key] = e.target.value; reload(); } }, h('option', { value: '' }, `Semua ${label}`), values.map((v) => h('option', {}, v)));
   let t;
   const lowChip = h('button', { class: `chip${f.low ? ' on' : ''}`, onclick: () => { f.low = f.low ? '' : '1'; lowChip.classList.toggle('on', !!f.low); reload(); } }, '⚠ Low stock');
+  const unitSel = h('select', { 'aria-label': 'Unit', onchange: (e) => { f.unit = e.target.value; reload(); } }, h('option', { value: '' }, 'Semua unit'), meta.units.map((u) => h('option', { value: u.id }, u.name)));
+  unitSel.value = f.unit;
+  const noUnitChip = h('button', { class: `chip${f.nounit ? ' on' : ''}`, onclick: () => { f.nounit = f.nounit ? '' : '1'; noUnitChip.classList.toggle('on', !!f.nounit); reload(); } }, 'Tanpa unit');
+  const bulkUnit = () => {
+    const u = h('select', {}, h('option', { value: '' }, '— pilih Unit tujuan —'), meta.units.map((x) => h('option', { value: x.id }, x.name)));
+    const hasFilter = f.q || f.type || f.class || f.moving || f.nounit;
+    modal('Atur Unit massal', h('div', {}, h('p', {}, hasFilter ? 'Unit akan diterapkan ke SEMUA item yang cocok dengan filter yang sedang aktif (bukan hanya halaman ini). Transaksi lama item itu yang belum punya Unit ikut diisi.' : 'Aktifkan filter dulu (mis. chip “Tanpa unit”, Type, atau pencarian) supaya tidak mengubah seluruh item sekaligus.'), h('label', { class: 'field' }, h('span', {}, 'Unit tujuan'), u)), { actions: [
+      { label: 'Batal', run: () => {} },
+      ...(hasFilter ? [{ label: 'Terapkan', kind: 'primary', run: async () => {
+        if (!u.value) { await attempt(async () => { throw new Error('Pilih Unit tujuan.'); }); return false; }
+        const r = await attempt(() => api.post('mw/items/unit', { unit_id: Number(u.value), q: f.q, type: f.type, class: f.class, moving: f.moving, nounit: f.nounit }), 'Unit diterapkan.');
+        if (!r) return false;
+        await load();
+      } }] : []),
+    ] });
+  };
   const noPhotoChip = h('button', { class: `chip${f.photo ? ' on' : ''}`, onclick: () => { f.photo = f.photo ? '' : 'none'; noPhotoChip.classList.toggle('on', !!f.photo); reload(); } }, 'Tanpa foto');
   root.append(h('div', { class: 'page' },
     h('div', { class: 'page-head' }, h('h1', {}, 'All Items'), count, h('span', { class: 'sp' }),
@@ -53,7 +70,7 @@ export default async function render(root, { user, meta, query }) {
       h('button', { class: 'btn primary', onclick: () => itemDialog(null, ctx, load) }, '+ Item')),
     h('div', { class: 'toolbar' },
       h('input', { class: 'grow', type: 'search', value: f.q, placeholder: 'Cari kode, nama, brand, spesifikasi, PIC…', oninput: (e) => { clearTimeout(t); t = setTimeout(() => { f.q = e.target.value; reload(); }, 300); } }),
-      sel('type', 'type', m.types), sel('class', 'class', m.classes), sel('moving', 'moving', m.moving), lowChip, noPhotoChip),
+      sel('type', 'type', m.types), sel('class', 'class', m.classes), sel('moving', 'moving', m.moving), unitSel, lowChip, noUnitChip, noPhotoChip, ['admin', 'spv'].includes(user.role) ? h('button', { class: 'btn sm', onclick: bulkUnit }, 'Atur Unit massal') : null),
     host, pager));
   await load();
 }
@@ -65,7 +82,7 @@ async function drawer(item, ctx, reload) {
   const pic = h('div', { class: 'ph-view' }, i.has_photo ? h('span', { class: 'muted' }, 'Memuat foto…') : h('div', { class: 'ph-empty' }, h('i', { class: 'ti ti-photo-off' }), h('span', {}, 'Belum ada foto — tambahkan lewat Edit')));
   if (i.has_photo) photoUrl(i.id).then((u) => pic.replaceChildren(u ? h('img', { src: u, alt: i.name, onclick: () => window.open(u, '_blank') }) : h('span', { class: 'muted' }, 'Foto tidak dapat dimuat.')));
   modal(`${i.id} — ${i.name}`, h('div', {},
-    h('div', { class: 'ph-split' }, h('dl', { class: 'kv' }, kv('Brand', i.brand), kv('Spesifikasi', i.spec), kv('Type / Class', `${i.item_type ?? '—'} / ${i.item_class ?? '—'}`), kv('Moving', i.moving_type), kv('PIC', i.pic),
+    h('div', { class: 'ph-split' }, h('dl', { class: 'kv' }, kv('Unit', i.unit_name ? h('b', {}, i.unit_name) : h('span', { class: 'badge prio-critical' }, 'Belum ada — lengkapi lewat Edit')), kv('Brand', i.brand), kv('Spesifikasi', i.spec), kv('Type / Class', `${i.item_type ?? '—'} / ${i.item_class ?? '—'}`), kv('Moving', i.moving_type), kv('PIC', i.pic),
       kv('Harga', rp(i.price)), kv('Catatan', i.notes),
       kv('Stok sekarang', h('span', {}, h('b', { style: `font-size:18px;color:${isLow(i) ? 'var(--red)' : 'var(--green)'}` }, num(i.qty)), ` ${i.uom} `, stockBadge(i))),
       kv('Min stok', num(i.min_stock)), kv('Nilai stok', rp(i.qty * i.price))), pic),
