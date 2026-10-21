@@ -289,3 +289,8 @@ body, .card, .sidenav-menu, .app-topbar, input, select, textarea { transition: b
 .ph-box img { width: 120px; height: 120px; object-fit: cover; border-radius: var(--ct-border-radius); background: #f9f9f7; } .ph-box img[hidden], .ph-empty[hidden] { display: none; }
 .ph-box .ph-empty { width: 120px; height: 120px; justify-content: center; border-radius: var(--ct-border-radius); background: rgba(var(--ct-primary-rgb), .06); padding: 6px; text-align: center; }
 .ph-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+
+/* detail item: data di kiri, foto di kanan */
+.ph-split { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
+.ph-split .ph-view { margin: 0; aspect-ratio: 1; min-height: 0; } .ph-split .ph-view img { height: 100%; max-height: none; }
+@media (max-width: 760px) { .ph-split { grid-template-columns: 1fr; } .ph-split .ph-view { order: -1; aspect-ratio: 4 / 3; } }

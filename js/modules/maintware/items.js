@@ -64,11 +64,11 @@ async function drawer(item, ctx, reload) {
   const kv = (k, v) => [h('dt', {}, k), h('dd', {}, v ?? '—')];
   const pic = h('div', { class: 'ph-view' }, i.has_photo ? h('span', { class: 'muted' }, 'Memuat foto…') : h('div', { class: 'ph-empty' }, h('i', { class: 'ti ti-photo-off' }), h('span', {}, 'Belum ada foto — tambahkan lewat Edit')));
   if (i.has_photo) photoUrl(i.id).then((u) => pic.replaceChildren(u ? h('img', { src: u, alt: i.name, onclick: () => window.open(u, '_blank') }) : h('span', { class: 'muted' }, 'Foto tidak dapat dimuat.')));
-  modal(`${i.id} — ${i.name}`, h('div', {}, pic,
-    h('dl', { class: 'kv' }, kv('Brand', i.brand), kv('Spesifikasi', i.spec), kv('Type / Class', `${i.item_type ?? '—'} / ${i.item_class ?? '—'}`), kv('Moving', i.moving_type), kv('PIC', i.pic),
+  modal(`${i.id} — ${i.name}`, h('div', {},
+    h('div', { class: 'ph-split' }, h('dl', { class: 'kv' }, kv('Brand', i.brand), kv('Spesifikasi', i.spec), kv('Type / Class', `${i.item_type ?? '—'} / ${i.item_class ?? '—'}`), kv('Moving', i.moving_type), kv('PIC', i.pic),
       kv('Harga', rp(i.price)), kv('Catatan', i.notes),
       kv('Stok sekarang', h('span', {}, h('b', { style: `font-size:18px;color:${isLow(i) ? 'var(--red)' : 'var(--green)'}` }, num(i.qty)), ` ${i.uom} `, stockBadge(i))),
-      kv('Min stok', num(i.min_stock)), kv('Nilai stok', rp(i.qty * i.price))),
+      kv('Min stok', num(i.min_stock)), kv('Nilai stok', rp(i.qty * i.price))), pic),
     h('h3', { style: 'margin:16px 0 8px' }, 'Dipakai di equipment'),
     d.equipment.length ? d.equipment.map((e) => h('div', { class: 'note' },
       h('a', { href: `#/eq/list?id=${e.id}`, onclick: () => document.querySelector('.overlay')?.remove() }, h('b', {}, e.name)), h('small', { class: 'muted' }, ` ${[e.unit_name, e.area_name].join(' › ')}`),
