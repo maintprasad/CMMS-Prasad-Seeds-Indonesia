@@ -302,3 +302,10 @@ body::before { content: ''; position: fixed; inset: -40px; z-index: -1; pointer-
   background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .5)), url(../assets/arclon/images/body-bg-dark.jpg) center / cover no-repeat; }
 [data-bs-theme=light] body::before { background: linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .5)), url(../assets/arclon/images/body-bg-light.jpg) center / cover no-repeat; }
 @media (max-width: 760px) { body::before { filter: blur(8px); inset: -20px; } }
+
+/* ── sidepanel ringkas: lebih sempit, tanpa teks yang ikut terlihat ── */
+html[data-sidenav-size=condensed] { --ct-sidenav-width-sm: 64px; }
+html[data-sidenav-size=condensed] .sidenav-menu .side-nav-title { display: none; }
+html[data-sidenav-size=condensed] .sidenav-menu .side-nav > .side-nav-item:not(:hover) .menu-text,
+html[data-sidenav-size=condensed] .sidenav-menu .side-nav > .side-nav-item:not(:hover) .menu-arrow { display: none !important; }
+html[data-sidenav-size=condensed] .sidenav-menu { overflow-x: clip; }
