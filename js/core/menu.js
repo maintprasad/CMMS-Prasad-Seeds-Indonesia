@@ -13,7 +13,6 @@ export const MENU = [
       { path: 'wo/mttr', label: 'MTTR / MTBF', icon: 'ti-clock-hour-4', roles: STAFF },
       { path: 'wo/reports', label: 'Reports', icon: 'ti-file-analytics', roles: STAFF },
       { path: 'wo/rating', label: 'Rating Teknisi', icon: 'ti-star', roles: STAFF },
-      { path: 'wo/admin', label: 'Admin Panel', icon: 'ti-shield-cog', roles: ['admin'] },
     ],
   },
   {
@@ -78,7 +77,6 @@ export const PAGES = {
   'wo/mttr': () => import('../modules/wo/reports.js').then((m) => ({ default: m.mttr })),
   'wo/reports': () => import('../modules/wo/reports.js').then((m) => ({ default: m.exportReport })),
   'wo/rating': () => import('../modules/wo/reports.js').then((m) => ({ default: m.rating })),
-  'wo/admin': () => import('../modules/wo/admin.js'),
   'eq/list': () => import('../modules/equipment/list.js'),
   'eq/structure': () => import('../modules/equipment/structure.js'),
   'pm/dashboard': () => import('../modules/preventive/dashboard.js'),
