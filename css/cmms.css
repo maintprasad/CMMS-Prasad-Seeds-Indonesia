@@ -294,3 +294,11 @@ body, .card, .sidenav-menu, .app-topbar, input, select, textarea { transition: b
 .ph-split { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
 .ph-split .ph-view { margin: 0; aspect-ratio: 1; min-height: 0; } .ph-split .ph-view img { height: 100%; max-height: none; }
 @media (max-width: 760px) { .ph-split { grid-template-columns: 1fr; } .ph-split .ph-view { order: -1; aspect-ratio: 4 / 3; } }
+
+/* ── wallpaper diburamkan: latar dipindah ke lapisan tetap di belakang halaman ── */
+html { background: #0b0c10; } [data-bs-theme=light] html, html[data-bs-theme=light] { background: #eef0f4; }
+body, [data-bs-theme=dark] body { background: transparent !important; }
+body::before { content: ''; position: fixed; inset: -40px; z-index: -1; pointer-events: none; transform: translateZ(0); filter: blur(14px);
+  background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .5)), url(../assets/arclon/images/body-bg-dark.jpg) center / cover no-repeat; }
+[data-bs-theme=light] body::before { background: linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .5)), url(../assets/arclon/images/body-bg-light.jpg) center / cover no-repeat; }
+@media (max-width: 760px) { body::before { filter: blur(8px); inset: -20px; } }
