@@ -1,5 +1,5 @@
 import { api } from '../../core/api.js';
-import { h, table, dt, dur, hours, barChart, downloadCsv, statusBadge } from '../../core/ui.js';
+import { h, table, dt, dur, hours, barChart } from '../../core/ui.js';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const monthsAgo = (n) => { const d = new Date(); d.setMonth(d.getMonth() - n, 1); return d.toISOString().slice(0, 10); };
@@ -79,22 +79,3 @@ export const rating = (root, { meta }) => reportPage(root, 'Rating Teknisi', {
   },
 });
 
-/** Reports: daftar WO periode tertentu + ekspor CSV. */
-export const exportReport = (root, { meta }) => {
-  let last = [];
-  return reportPage(root, 'Reports Work Order', {
-    meta, defaultFrom: monthsAgo(0),
-    extra: () => h('button', { class: 'btn', onclick: () => last.length && downloadCsv(`wo-${today()}.csv`,
-      ['ID', 'Judul', 'Tipe', 'Prioritas', 'Status', 'Unit', 'Equipment', 'Pemohon', 'Teknisi', 'Dibuat', 'Mulai', 'Selesai', 'Durasi (jam)', 'Rating'],
-      last.map((w) => [w.id, w.title, w.type, w.priority, w.status, w.unit_name, w.equipment_name, w.requestor_name, w.techs, w.created_at, w.started_at, w.finished_at, (w.work_seconds / 3600).toFixed(2), w.rating])) }, '⬇ Ekspor CSV'),
-    draw: async (f) => {
-      const { rows, total } = await api.get('wo', { ...f, limit: 500 });
-      last = rows;
-      const by = (k) => rows.reduce((a, r) => (a[r[k]] = (a[r[k]] || 0) + 1, a), {});
-      return [h('div', { class: 'card' }, h('b', {}, `${total} WO`), h('span', { class: 'muted' }, ' · ' + Object.entries(by('status')).map(([k, v]) => `${k} ${v}`).join(' · ')), total > 500 ? h('div', { class: 'muted' }, 'Menampilkan 500 terbaru — persempit periode.') : null),
-        h('div', { style: 'height:14px' }),
-        table([{ label: 'ID', render: (w) => h('a', { class: 'mono', href: `#/wo/detail?id=${encodeURIComponent(w.id)}` }, w.id) }, { label: 'Judul', key: 'title' }, { label: 'Equipment', key: 'equipment_name' },
-          { label: 'Status', render: (w) => statusBadge(w.status) }, { label: 'Teknisi', key: 'techs' }, { label: 'Durasi', render: (w) => dur(w.work_seconds), cls: 'num' }, { label: 'Dibuat', render: (w) => dt(w.created_at) }], rows)];
-    },
-  });
-};

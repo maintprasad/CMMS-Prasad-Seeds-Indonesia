@@ -7,12 +7,7 @@ export const MENU = [
   {
     key: 'wo', title: 'Work Order', icon: 'ti-clipboard-list', items: [
       { path: 'wo/list', label: 'Progress WO', icon: 'ti-clipboard-list', roles: ALL },
-      { path: 'wo/comparison', label: 'in / out', icon: 'ti-arrows-exchange', roles: ALL },
       { path: 'wo/dashboard', label: 'Dashboard', icon: 'ti-layout-dashboard', roles: ALL },
-      { path: 'wo/equip-history', label: 'Equip. History', icon: 'ti-history', roles: STAFF },
-      { path: 'wo/mttr', label: 'MTTR / MTBF', icon: 'ti-clock-hour-4', roles: STAFF },
-      { path: 'wo/reports', label: 'Reports', icon: 'ti-file-analytics', roles: STAFF },
-      { path: 'wo/rating', label: 'Rating Teknisi', icon: 'ti-star', roles: STAFF },
     ],
   },
   {
@@ -29,7 +24,6 @@ export const MENU = [
       { path: 'pm/schedule', label: 'Schedule PM', icon: 'ti-calendar', roles: STAFF },
       { path: 'pm/input', label: 'Input PM', icon: 'ti-clipboard-check', roles: STAFF },
       { path: 'pm/list', label: 'Daftar Laporan', icon: 'ti-list-details', roles: STAFF },
-      { path: 'pm/resume', label: 'Resume Laporan', icon: 'ti-report', roles: STAFF },
       { path: 'pm/outstanding', label: 'Outstanding PM', icon: 'ti-alarm', roles: STAFF },
       { path: 'pm/takeover', label: 'Takeover PM', icon: 'ti-switch-horizontal', roles: STAFF },
       { path: 'pm/templates', label: 'Kelola Template PM', icon: 'ti-template', roles: STAFF },
@@ -40,7 +34,6 @@ export const MENU = [
       { path: 'mw/dashboard', label: 'Dashboard', icon: 'ti-layout-dashboard', roles: STAFF },
       { path: 'mw/items', label: 'All Items', icon: 'ti-box', roles: STAFF },
       { path: 'mw/log', label: 'Stock Log', icon: 'ti-list', roles: STAFF },
-      { path: 'mw/monthly', label: 'Monthly Report', icon: 'ti-calendar-stats', roles: STAFF },
       { path: 'mw/reorder', label: 'Reorder List', icon: 'ti-shopping-cart', roles: STAFF },
       { path: 'mw/purchase', label: 'Purchase Request', icon: 'ti-receipt', roles: STAFF },
       { path: 'mw/config', label: 'Config', icon: 'ti-settings', roles: STAFF },
@@ -49,6 +42,12 @@ export const MENU = [
   {
     key: 'rp', title: 'Report', icon: 'ti-file-analytics', items: [
       { path: 'rp/center', label: 'Generate Report', icon: 'ti-file-export', roles: STAFF },
+      { path: 'wo/comparison', label: 'WO · in / out', icon: 'ti-arrows-exchange', roles: ALL },
+      { path: 'wo/equip-history', label: 'WO · Equip. History', icon: 'ti-history', roles: STAFF },
+      { path: 'wo/mttr', label: 'WO · MTTR / MTBF', icon: 'ti-clock-hour-4', roles: STAFF },
+      { path: 'wo/rating', label: 'WO · Rating Teknisi', icon: 'ti-star', roles: STAFF },
+      { path: 'pm/resume', label: 'PM · Resume Laporan', icon: 'ti-report', roles: STAFF },
+      { path: 'mw/monthly', label: 'MW · Monthly Report', icon: 'ti-calendar-stats', roles: STAFF },
     ],
   },
   {
@@ -75,7 +74,6 @@ export const PAGES = {
   'wo/dashboard': () => import('../modules/wo/dashboard.js'),
   'wo/equip-history': () => import('../modules/wo/reports.js').then((m) => ({ default: m.equipHistory })),
   'wo/mttr': () => import('../modules/wo/reports.js').then((m) => ({ default: m.mttr })),
-  'wo/reports': () => import('../modules/wo/reports.js').then((m) => ({ default: m.exportReport })),
   'wo/rating': () => import('../modules/wo/reports.js').then((m) => ({ default: m.rating })),
   'eq/list': () => import('../modules/equipment/list.js'),
   'eq/structure': () => import('../modules/equipment/structure.js'),

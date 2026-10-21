@@ -344,3 +344,20 @@ Permintaan: setiap material / sparepart MaintWare harus punya foto, ditampilkan 
 - Catatan: 343 item lama belum punya foto (tidak dipaksa saat edit); gunakan chip "Tanpa foto" untuk melengkapinya. Foto belum tampil di pemilih sparepart Work Order / PM / Equipment.
 
 **Nomor versi terbaru:** 1.4
+
+## 2026-10-21 (2)
+
+**Version:** 1.5
+
+**Penyebab revisi:**
+Permintaan: menu laporan di keempat modul dihapus; semua fungsi laporan dipusatkan di menu Report pada sidepanel. (Sebelumnya juga: wallpaper latar diburamkan, menu Admin Panel WO dihapus, foto item MaintWare dipindah ke sisi kanan detail.)
+
+**Metode revisi:**
+- Dikeluarkan dari modul dan dipindah ke grup **Report**: WO · in / out, WO · Equip. History, WO · MTTR / MTBF, WO · Rating Teknisi, PM · Resume Laporan, MW · Monthly Report (halaman & rute tidak berubah, hanya letak menu).
+- WO · Reports (daftar WO + ekspor CSV) dihapus — digantikan Generate Report (Excel/PowerPoint/PDF, memuat Daftar WO dan sparepart).
+- Tetap di modulnya karena bukan laporan melainkan data kerja: Daftar Laporan PM (laporan inspeksi yang diisi/ditandatangani), Riwayat & Finding Daily Monitoring, Reorder List MaintWare.
+
+**Hasil revisi:**
+- Semua halaman yang dipindah terbuka tanpa error dan menandai menu Report sebagai aktif; menu modul kini hanya berisi fungsi kerja.
+
+**Nomor versi terbaru:** 1.5
