@@ -325,3 +325,22 @@ Permintaan: CMMS bisa dipasang sebagai PWA dengan ikon dari gambar "Vintage Gear
 - Belum teruji: cache offline — Cache Storage pada profil Chrome headless di komputer ini menolak semua penulisan ("Entry already exists", termasuk `put` data sepele), jadi perilaku offline perlu dicoba di Chrome biasa (matikan jaringan → buka aplikasi).
 
 **Nomor versi terbaru:** 1.3
+
+## 2026-10-21
+
+**Version:** 1.4
+
+**Penyebab revisi:**
+Permintaan: setiap material / sparepart MaintWare harus punya foto, ditampilkan di detail item; item baru wajib berfoto.
+
+**Metode revisi:**
+- Migrasi `007_mw_photos` (SQLite + MySQL): tabel `mw_item_photos` (satu foto per item, base64) — terpisah dari `mw_items` agar daftar tetap ringan. Sudah terpasang di SQLite lokal, MariaDB lokal, dan Turso.
+- API: `mw/item/save` menerima `photo` (base64) + `photo_mime`; **item baru wajib berfoto** (400 bila kosong); validasi JPEG/PNG/WebP lewat magic bytes, maks 600 KB; edit item boleh tanpa foto baru (foto lama dipertahankan). `GET mw/item/photo?id=` mengirim gambar (butuh login staf). Daftar item memuat `has_photo`, filter `photo=none`. Hapus item ikut menghapus fotonya.
+- UI: dialog Tambah/Edit item punya kotak foto (ambil kamera / pilih galeri, dikompres di browser maks 900 px JPEG 82%, pratinjau); detail item menampilkan foto di bagian atas (klik = buka ukuran penuh); daftar item punya kolom **Foto** dan chip **Tanpa foto** untuk menelusuri item lama yang belum difoto.
+
+**Hasil revisi:**
+- Tes e2e 237 lulus di SQLite dan MariaDB (7 pemeriksaan baru: wajib foto, bukan gambar, terlalu besar, unduh, has_photo, filter, tanpa login).
+- Uji UI Chrome: tanpa foto ditolak dengan pesan, pilih foto → pratinjau, simpan, detail menampilkan foto; item uji dihapus.
+- Catatan: 343 item lama belum punya foto (tidak dipaksa saat edit); gunakan chip "Tanpa foto" untuk melengkapinya. Foto belum tampil di pemilih sparepart Work Order / PM / Equipment.
+
+**Nomor versi terbaru:** 1.4

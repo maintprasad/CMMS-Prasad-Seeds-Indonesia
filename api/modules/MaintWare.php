@@ -46,6 +46,9 @@ final class MaintWareApi
         if (Http::query('low') === '1') {
             $where[] = 'qty < min_stock';
         }
+        if (Http::query('photo') === 'none') {
+            $where[] = 'id NOT IN (SELECT item_id FROM mw_item_photos)';
+        }
         if (($q = trim((string) Http::query('q', ''))) !== '') {
             $where[] = '(name LIKE ? OR id LIKE ? OR spec LIKE ? OR brand LIKE ? OR pic LIKE ? OR notes LIKE ?)';
             array_push($p, ...array_fill(0, 6, "%$q%"));
@@ -57,7 +60,8 @@ final class MaintWareApi
         $offset = max(0, (int) Http::query('offset', '0'));
         $total = (int) Db::query("SELECT COUNT(*) c FROM mw_items $w", $p)[0]['c'];
         $rows = Db::query(
-            "SELECT id, name, brand, spec, item_type, item_class, moving_type, uom, unit_id, qty, min_stock, price, pic, notes, updated_at
+            "SELECT id, name, brand, spec, item_type, item_class, moving_type, uom, unit_id, qty, min_stock, price, pic, notes, updated_at,
+                    (SELECT COUNT(*) FROM mw_item_photos ph WHERE ph.item_id = mw_items.id) AS has_photo
              FROM mw_items $w ORDER BY $sort $dir, id LIMIT $limit OFFSET $offset",
             $p
         );
@@ -68,6 +72,7 @@ final class MaintWareApi
     {
         Auth::requireRole(...self::STAFF);
         $item = self::find((string) Http::query('id', ''));
+        $item['has_photo'] = Db::query('SELECT 1 FROM mw_item_photos WHERE item_id = ?', [$item['id']]) ? 1 : 0;
         return [
             'item' => $item,
             'history' => Db::query(
@@ -106,10 +111,14 @@ final class MaintWareApi
             trim((string) ($in['uom'] ?? '')) ?: 'pcs', max(0, (float) ($in['price'] ?? 0)), max(0, (float) ($in['min_stock'] ?? 0)),
             $pic, trim((string) ($in['notes'] ?? '')) ?: null, ($u = (int) ($in['unit_id'] ?? 0)) > 0 ? $u : null, now()];
         $id = (string) ($in['id'] ?? '');
+        $photo = self::photoStatement((string) ($in['photo'] ?? ''), (string) ($in['photo_mime'] ?? ''));
         if ($id !== '') {
             self::find($id);
-            Db::transaction([['UPDATE mw_items SET name=?, brand=?, spec=?, item_type=?, item_class=?, moving_type=?, uom=?, price=?, min_stock=?, pic=?, notes=?, unit_id=?, updated_at=? WHERE id=?', [...$vals, $id]]]);
+            Db::transaction(array_values(array_filter([['UPDATE mw_items SET name=?, brand=?, spec=?, item_type=?, item_class=?, moving_type=?, uom=?, price=?, min_stock=?, pic=?, notes=?, unit_id=?, updated_at=? WHERE id=?', [...$vals, $id]], ...($photo ? self::photoWrite($id, $photo) : [])])));
             return ['id' => $id];
+        }
+        if (!$photo) {
+            throw new HttpError('Foto item wajib diisi untuk material / sparepart baru.');
         }
         $id = self::nextCode($type);
         $qty = max(0, (float) ($in['qty'] ?? 0));
@@ -117,8 +126,58 @@ final class MaintWareApi
         if ($qty > 0) {
             $st = array_merge($st, self::stockStatements(['id' => $id, 'qty' => 0], 'IN', $qty, ['pic' => $pic, 'notes' => 'Stok awal', 'by' => $me['name']]));
         }
-        Db::transaction($st);
+        Db::transaction([...$st, ...self::photoWrite($id, $photo)]);
         return ['id' => $id];
+    }
+
+    /** Validasi foto (base64 tanpa prefix): JPEG/PNG/WebP asli (cek magic bytes), maks 600 KB. null bila kosong. */
+    private static function photoStatement(string $b64, string $mime): ?array
+    {
+        if ($b64 === '') {
+            return null;
+        }
+        $raw = base64_decode($b64, true);
+        if ($raw === false || $raw === '') {
+            throw new HttpError('Foto tidak valid.');
+        }
+        if (strlen($raw) > 600000) {
+            throw new HttpError('Foto terlalu besar (maks 600 KB setelah dikompres).');
+        }
+        $real = match (true) {
+            str_starts_with($raw, "\xFF\xD8\xFF") => 'image/jpeg',
+            str_starts_with($raw, "\x89PNG\r\n\x1a\n") => 'image/png',
+            str_starts_with($raw, 'RIFF') && substr($raw, 8, 4) === 'WEBP' => 'image/webp',
+            default => null,
+        };
+        if ($real === null) {
+            throw new HttpError('Foto harus berupa JPEG, PNG, atau WebP.');
+        }
+        return ['mime' => $real, 'data' => $b64];
+    }
+
+    private static function photoWrite(string $id, array $photo): array
+    {
+        return [
+            ['DELETE FROM mw_item_photos WHERE item_id = ?', [$id]],
+            ['INSERT INTO mw_item_photos (item_id, mime, data, updated_at) VALUES (?,?,?,?)', [$id, $photo['mime'], $photo['data'], now()]],
+        ];
+    }
+
+    public static function photo(): never
+    {
+        Auth::requireRole(...self::STAFF);
+        $p = Db::query('SELECT mime, data FROM mw_item_photos WHERE item_id = ?', [(string) Http::query('id', '')])[0] ?? null;
+        if (!$p) {
+            throw new HttpError('Item ini belum punya foto.', 404);
+        }
+        $raw = (string) base64_decode((string) $p['data']);
+        http_response_code(200);
+        header('Content-Type: ' . $p['mime']);
+        header('Content-Length: ' . strlen($raw));
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, max-age=3600');
+        echo $raw;
+        exit;
     }
 
     public static function deleteItem(): array
@@ -129,7 +188,7 @@ final class MaintWareApi
         if (Db::query('SELECT 1 FROM wo_parts WHERE item_id = ? LIMIT 1', [$id])) {
             throw new HttpError('Item sudah dipakai di Work Order — tidak bisa dihapus.', 409);
         }
-        Db::transaction([['DELETE FROM mw_transactions WHERE item_id = ?', [$id]], ['DELETE FROM mw_items WHERE id = ?', [$id]]]);
+        Db::transaction([['DELETE FROM mw_transactions WHERE item_id = ?', [$id]], ['DELETE FROM mw_item_photos WHERE item_id = ?', [$id]], ['DELETE FROM mw_items WHERE id = ?', [$id]]]);
         return [];
     }
 

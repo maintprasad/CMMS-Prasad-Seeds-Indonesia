@@ -1,12 +1,12 @@
 import { api } from '../../core/api.js';
 import { h, attempt, modal, confirmBox, table, dt, downloadCsv } from '../../core/ui.js';
-import { rp, num, isLow, stockBadge, trxBadge, movingBadge, mwMeta, itemDialog, stockDialog, trxWhere } from './shared.js';
+import { rp, num, isLow, stockBadge, trxBadge, movingBadge, mwMeta, itemDialog, stockDialog, trxWhere, photoUrl } from './shared.js';
 
 const PAGE = 25;
 
 export default async function render(root, { user, meta, query }) {
   const m = await mwMeta();
-  const f = { q: '', type: '', class: '', moving: '', low: query.low || '' };
+  const f = { q: '', type: '', class: '', moving: '', low: query.low || '', photo: query.photo || '' };
   f.q = query.q || '';
   let page = 0, sort = 'id', dir = 'asc';
   const host = h('div');
@@ -16,7 +16,7 @@ export default async function render(root, { user, meta, query }) {
   const canDelete = user.role === 'admin';
 
   const load = async () => {
-    const r = await api.get('mw/items', { q: f.q, type: f.type, class: f.class, moving: f.moving, low: f.low, sort, dir, limit: PAGE, offset: page * PAGE });
+    const r = await api.get('mw/items', { q: f.q, type: f.type, class: f.class, moving: f.moving, low: f.low, photo: f.photo, sort, dir, limit: PAGE, offset: page * PAGE });
     const th = (label, key) => h('span', { style: 'cursor:pointer', onclick: () => { dir = sort === key && dir === 'asc' ? 'desc' : 'asc'; sort = key; load(); } }, label + (sort === key ? (dir === 'asc' ? ' ▲' : ' ▼') : ''));
     host.replaceChildren(table([
       { label: th('Kode', 'id'), title: 'Kode', render: (i) => h('span', { class: 'mono' }, i.id) },
@@ -26,7 +26,8 @@ export default async function render(root, { user, meta, query }) {
       { label: th('Stok', 'qty'), title: 'Stok', cls: 'num', render: (i) => h('span', { style: isLow(i) ? 'color:var(--red);font-weight:700' : '' }, `${num(i.qty)} ${i.uom}`) },
       { label: 'Min', cls: 'num', render: (i) => num(i.min_stock) },
       { label: th('Harga', 'price'), title: 'Harga', cls: 'num', render: (i) => rp(i.price) },
-      { label: 'PIC', key: 'pic' }, { label: 'Status', render: (i) => stockBadge(i) },
+      { label: 'PIC', key: 'pic' }, { label: 'Foto', render: (i) => (i.has_photo ? h('i', { class: 'ti ti-photo text-success', title: 'Ada foto' }) : h('i', { class: 'ti ti-photo-off text-muted', title: 'Belum ada foto' })) },
+      { label: 'Status', render: (i) => stockBadge(i) },
       { label: '', render: (i) => h('div', { style: 'display:flex;gap:4px' },
         h('button', { class: 'btn sm', onclick: (e) => { e.stopPropagation(); stockDialog(i, ctx, load); } }, 'Stock'),
         h('button', { class: 'btn sm', onclick: (e) => { e.stopPropagation(); itemDialog(i, ctx, load); } }, 'Edit'),
@@ -45,13 +46,14 @@ export default async function render(root, { user, meta, query }) {
   const sel = (label, key, values) => h('select', { 'aria-label': label, onchange: (e) => { f[key] = e.target.value; reload(); } }, h('option', { value: '' }, `Semua ${label}`), values.map((v) => h('option', {}, v)));
   let t;
   const lowChip = h('button', { class: `chip${f.low ? ' on' : ''}`, onclick: () => { f.low = f.low ? '' : '1'; lowChip.classList.toggle('on', !!f.low); reload(); } }, '⚠ Low stock');
+  const noPhotoChip = h('button', { class: `chip${f.photo ? ' on' : ''}`, onclick: () => { f.photo = f.photo ? '' : 'none'; noPhotoChip.classList.toggle('on', !!f.photo); reload(); } }, 'Tanpa foto');
   root.append(h('div', { class: 'page' },
     h('div', { class: 'page-head' }, h('h1', {}, 'All Items'), count, h('span', { class: 'sp' }),
       h('button', { class: 'btn', onclick: () => stockDialog(null, ctx, load, 'OUT') }, '± Stock IN / OUT'),
       h('button', { class: 'btn primary', onclick: () => itemDialog(null, ctx, load) }, '+ Item')),
     h('div', { class: 'toolbar' },
       h('input', { class: 'grow', type: 'search', value: f.q, placeholder: 'Cari kode, nama, brand, spesifikasi, PIC…', oninput: (e) => { clearTimeout(t); t = setTimeout(() => { f.q = e.target.value; reload(); }, 300); } }),
-      sel('type', 'type', m.types), sel('class', 'class', m.classes), sel('moving', 'moving', m.moving), lowChip),
+      sel('type', 'type', m.types), sel('class', 'class', m.classes), sel('moving', 'moving', m.moving), lowChip, noPhotoChip),
     host, pager));
   await load();
 }
@@ -60,7 +62,9 @@ async function drawer(item, ctx, reload) {
   const d = await api.get('mw/item', { id: item.id });
   const i = d.item;
   const kv = (k, v) => [h('dt', {}, k), h('dd', {}, v ?? '—')];
-  modal(`${i.id} — ${i.name}`, h('div', {},
+  const pic = h('div', { class: 'ph-view' }, i.has_photo ? h('span', { class: 'muted' }, 'Memuat foto…') : h('div', { class: 'ph-empty' }, h('i', { class: 'ti ti-photo-off' }), h('span', {}, 'Belum ada foto — tambahkan lewat Edit')));
+  if (i.has_photo) photoUrl(i.id).then((u) => pic.replaceChildren(u ? h('img', { src: u, alt: i.name, onclick: () => window.open(u, '_blank') }) : h('span', { class: 'muted' }, 'Foto tidak dapat dimuat.')));
+  modal(`${i.id} — ${i.name}`, h('div', {}, pic,
     h('dl', { class: 'kv' }, kv('Brand', i.brand), kv('Spesifikasi', i.spec), kv('Type / Class', `${i.item_type ?? '—'} / ${i.item_class ?? '—'}`), kv('Moving', i.moving_type), kv('PIC', i.pic),
       kv('Harga', rp(i.price)), kv('Catatan', i.notes),
       kv('Stok sekarang', h('span', {}, h('b', { style: `font-size:18px;color:${isLow(i) ? 'var(--red)' : 'var(--green)'}` }, num(i.qty)), ` ${i.uom} `, stockBadge(i))),

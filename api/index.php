@@ -41,6 +41,7 @@ const ROUTES = [
     'GET mw/meta'               => ['MaintWareApi', 'meta'],
     'GET mw/items'              => ['MaintWareApi', 'items'],
     'GET mw/item'               => ['MaintWareApi', 'item'],
+    'GET mw/item/photo'         => ['MaintWareApi', 'photo'],
     'POST mw/item/save'         => ['MaintWareApi', 'saveItem'],
     'POST mw/item/delete'       => ['MaintWareApi', 'deleteItem'],
     'POST mw/stock'             => ['MaintWareApi', 'stock'],

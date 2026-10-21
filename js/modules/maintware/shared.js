@@ -1,4 +1,4 @@
-import { api } from '../../core/api.js';
+import { api, fetchBlob } from '../../core/api.js';
 import { h, attempt, modal, form, dt } from '../../core/ui.js';
 
 export const rp = (v) => 'Rp ' + Math.round(Number(v) || 0).toLocaleString('id-ID');
@@ -9,6 +9,58 @@ export const MONTHS = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', '
 export const stockBadge = (i) => h('span', { class: `badge ${isLow(i) ? 'prio-critical' : 'done'}` }, isLow(i) ? '⚠ LOW' : 'OK');
 export const trxBadge = (t) => h('span', { class: `badge ${t === 'IN' ? 'done' : 'prio-critical'}` }, t);
 export const movingBadge = (m) => h('span', { class: `badge ${m === 'Fast Moving' ? 'prog' : ''}` }, m === 'Fast Moving' ? '↑ Fast' : m ? '↓ Slow' : '—');
+
+// ── Foto item ──
+const photoUrls = new Map();
+/** URL blob foto item (null bila belum ada). Di-cache per item; panggil photoUrlReset(id) setelah foto diganti. */
+export async function photoUrl(id) {
+  if (!photoUrls.has(id)) {
+    try { photoUrls.set(id, URL.createObjectURL(await fetchBlob('mw/item/photo', { id }))); } catch { return null; }
+  }
+  return photoUrls.get(id);
+}
+export const photoUrlReset = (id) => { const u = photoUrls.get(id); if (u) URL.revokeObjectURL(u); photoUrls.delete(id); };
+
+/** Perkecil foto di browser (maks 900 px, JPEG 82%) → { b64, mime, dataUrl }. */
+export async function compressPhoto(file) {
+  const bmp = await createImageBitmap(file).catch(() => null);
+  if (!bmp) throw new Error('File bukan gambar yang bisa dibaca.');
+  const k = Math.min(1, 900 / Math.max(bmp.width, bmp.height));
+  const c = h('canvas');
+  c.width = Math.round(bmp.width * k);
+  c.height = Math.round(bmp.height * k);
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff';
+  x.fillRect(0, 0, c.width, c.height);
+  x.drawImage(bmp, 0, 0, c.width, c.height);
+  const dataUrl = c.toDataURL('image/jpeg', 0.82);
+  return { b64: dataUrl.split(',')[1], mime: 'image/jpeg', dataUrl };
+}
+
+/** Kotak foto item: pratinjau + ambil dari kamera / galeri. get() → { b64, mime } | null (null = tidak diganti). */
+function photoField(item) {
+  let picked = null;
+  const img = h('img', { alt: 'Foto item', hidden: true });
+  const empty = h('div', { class: 'ph-empty' }, h('i', { class: 'ti ti-camera-plus' }), h('span', {}, 'Belum ada foto'));
+  const msg = h('small', { class: 'muted' }, item?.id ? 'Biarkan bila foto tidak diganti.' : 'Wajib untuk material / sparepart baru.');
+  const input = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      picked = await compressPhoto(file);
+      img.src = picked.dataUrl;
+      img.hidden = false;
+      empty.hidden = true;
+      msg.textContent = `Foto siap (${Math.round(picked.b64.length * 0.75 / 1000)} KB)`;
+    } catch (ex) { msg.textContent = ex.message; }
+  } });
+  if (item?.id && item.has_photo) photoUrl(item.id).then((u) => { if (u && !picked) { img.src = u; img.hidden = false; empty.hidden = true; } });
+  const node = h('div', { class: 'field wide ph-field' }, h('span', {}, 'Foto material / sparepart' + (item?.id ? '' : ' *')),
+    h('div', { class: 'ph-box' }, img, empty,
+      h('div', { class: 'ph-actions' }, h('button', { type: 'button', class: 'btn', onclick: () => input.click() }, h('i', { class: 'ti ti-camera me-1' }), 'Ambil / pilih foto'), msg), input));
+  return { node, get: () => (picked ? { b64: picked.b64, mime: picked.mime } : null) };
+}
 
 let metaCache;
 export async function mwMeta(force = false) {
@@ -21,6 +73,7 @@ export async function itemDialog(item, { units, user }, done) {
   const m = await mwMeta();
   const isEdit = !!item?.id;
   const opt = (arr) => arr.map((v) => ({ value: v, label: v }));
+  const ph = photoField(item);
   const f = form([
     { name: 'name', label: 'Nama item', required: true, wide: true },
     { name: 'brand', label: 'Brand' }, { name: 'spec', label: 'Spesifikasi' },
@@ -35,11 +88,15 @@ export async function itemDialog(item, { units, user }, done) {
     { name: 'pic', label: 'PIC', required: true, default: user.name },
     { name: 'notes', label: 'Catatan', type: 'textarea', wide: true },
   ], { moving_type: 'Fast Moving', uom: 'pcs', ...(item || {}) });
+  f.node.prepend(ph.node);
   modal(isEdit ? `Edit item ${item.id}` : 'Tambah item', f.node, { wide: true, actions: [
     { label: 'Batal', run: () => {} },
     { label: isEdit ? 'Simpan' : 'Tambah item', kind: 'primary', run: async () => {
-      const r = await attempt(() => api.post('mw/item/save', { id: item?.id, ...f.values() }), isEdit ? 'Item diperbarui.' : 'Item ditambahkan.');
+      const photo = ph.get();
+      if (!isEdit && !photo) { await attempt(async () => { throw new Error('Foto item wajib diisi untuk material / sparepart baru.'); }); return false; }
+      const r = await attempt(() => api.post('mw/item/save', { id: item?.id, ...f.values(), ...(photo ? { photo: photo.b64, photo_mime: photo.mime } : {}) }), isEdit ? 'Item diperbarui.' : 'Item ditambahkan.');
       if (!r) return false;
+      if (photo) photoUrlReset(r.id);
       await mwMeta(true);
       done?.(r.id);
     } },

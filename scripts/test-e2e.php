@@ -239,12 +239,24 @@ check('equipment get: reliability & recent_wo', count(call('GET', 'equipment/get
 check('equipment berWO tidak bisa dihapus', call('POST', 'equipment/delete', [], ['id' => $eqId], $A)['_status'] === 409);
 
 echo "== MaintWare\n";
+// PNG 1x1 valid (magic bytes asli) untuk foto item
+$png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 check('user biasa tidak bisa akses MaintWare (403)', call('GET', 'mw/dashboard', [], null, $U)['_status'] === 403);
 check('user biasa tidak bisa Stock IN (403)', call('POST', 'mw/stock', [], ['item_id' => 'MW-1', 'type' => 'IN', 'qty' => 1, 'pic' => 'x'], $U)['_status'] === 403);
-$r = call('POST', 'mw/item/save', [], ['name' => 'Gearbox seal ' . $suffix, 'item_type' => 'Mechanical', 'item_class' => 'Spare Part', 'moving_type' => 'Slow Moving', 'uom' => 'pcs', 'price' => 50000, 'qty' => 5, 'min_stock' => 3, 'pic' => 'Andi'], $T);
+$r = call('POST', 'mw/item/save', [], ['name' => 'Gearbox seal ' . $suffix, 'item_type' => 'Mechanical', 'item_class' => 'Spare Part', 'moving_type' => 'Slow Moving', 'uom' => 'pcs', 'price' => 50000, 'qty' => 5, 'min_stock' => 3, 'pic' => 'Andi', 'photo' => $png], $T);
 check('item baru dapat kode MECH-001', ($r['id'] ?? '') === 'MECH-001', json_encode($r));
-$r2 = call('POST', 'mw/item/save', [], ['name' => 'Kabel', 'item_type' => 'Electrical', 'item_class' => 'Consumable', 'moving_type' => 'Fast Moving', 'pic' => 'Andi'], $T);
+$nf = call('POST', 'mw/item/save', [], ['name' => 'Kabel', 'item_type' => 'Electrical', 'item_class' => 'Consumable', 'moving_type' => 'Fast Moving', 'pic' => 'Andi'], $T);
+check('item baru tanpa foto ditolak (400)', $nf['_status'] === 400);
+$r2 = call('POST', 'mw/item/save', [], ['name' => 'Kabel', 'item_type' => 'Electrical', 'item_class' => 'Consumable', 'moving_type' => 'Fast Moving', 'pic' => 'Andi', 'photo' => $png], $T);
 check('prefix per type (ELEC-001)', ($r2['id'] ?? '') === 'ELEC-001');
+check('foto bukan gambar ditolak (400)', call('POST', 'mw/item/save', [], ['name' => 'x', 'item_type' => 'Mechanical', 'item_class' => 'Tools', 'moving_type' => 'Fast Moving', 'pic' => 'A', 'photo' => base64_encode('bukan gambar')], $T)['_status'] === 400);
+check('foto terlalu besar ditolak (400)', call('POST', 'mw/item/save', [], ['name' => 'x', 'item_type' => 'Mechanical', 'item_class' => 'Tools', 'moving_type' => 'Fast Moving', 'pic' => 'A', 'photo' => base64_encode("\xFF\xD8\xFF" . str_repeat('a', 700000))], $T)['_status'] === 400);
+$ph = (function () use ($port, $T) { $ch = curl_init("http://127.0.0.1:$port/api/index.php?r=mw/item/photo&id=MECH-001"); curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_HTTPHEADER => ['X-Auth-Token: ' . $T]]); $b = curl_exec($ch); return [curl_getinfo($ch, CURLINFO_RESPONSE_CODE), curl_getinfo($ch, CURLINFO_CONTENT_TYPE), $b]; })();
+check('foto item dapat diunduh (image/png)', $ph[0] === 200 && $ph[1] === 'image/png' && str_starts_with((string) $ph[2], "\x89PNG"));
+check('has_photo di daftar & detail item', (int) (call('GET', 'mw/items', ['q' => 'MECH-001'], null, $T)['rows'][0]['has_photo'] ?? 0) === 1 && (int) (call('GET', 'mw/item', ['id' => 'MECH-001'], null, $T)['item']['has_photo'] ?? 0) === 1);
+$none = array_column(call('GET', 'mw/items', ['photo' => 'none'], null, $T)['rows'], 'id');
+check('filter tanpa foto', in_array('MW-1', $none, true) && !in_array('MECH-001', $none, true));
+check('foto item tanpa login ditolak (401)', call('GET', 'mw/item/photo', ['id' => 'MECH-001'])['_status'] === 401);
 check('item tanpa PIC ditolak', call('POST', 'mw/item/save', [], ['name' => 'x', 'item_type' => 'Mechanical', 'item_class' => 'Tools', 'moving_type' => 'Fast Moving'], $T)['_status'] === 400);
 check('stok awal tercatat sebagai transaksi IN', (int) Db::query("SELECT COUNT(*) c FROM mw_transactions WHERE item_id = 'MECH-001' AND trx_type = 'IN'")[0]['c'] === 1);
 $r = call('POST', 'mw/stock', [], ['item_id' => 'MECH-001', 'type' => 'OUT', 'qty' => 3, 'pic' => 'Andi', 'equipment_id' => 2, 'notes' => 'ganti seal'], $T);
