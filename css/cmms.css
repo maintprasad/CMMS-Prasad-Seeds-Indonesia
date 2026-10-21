@@ -308,4 +308,7 @@ html[data-sidenav-size=condensed] { --ct-sidenav-width-sm: 64px; }
 html[data-sidenav-size=condensed] .sidenav-menu .side-nav-title { display: none; }
 html[data-sidenav-size=condensed] .sidenav-menu .side-nav > .side-nav-item:not(:hover) .menu-text,
 html[data-sidenav-size=condensed] .sidenav-menu .side-nav > .side-nav-item:not(:hover) .menu-arrow { display: none !important; }
-html[data-sidenav-size=condensed] .sidenav-menu { overflow-x: clip; }
+html[data-sidenav-size=condensed] .sidenav-menu, html[data-sidenav-size=condensed] .sidenav-scroll { overflow: visible; }
+/* sidepanel ringkas: submenu tampil sebagai flyout saat disorot (animasi lipat tidak berlaku) */
+html[data-sidenav-size=condensed] .side-nav .side-nav-item:hover > .collapse > .sub-menu { visibility: visible !important; transition: none; overflow: visible; }
+html[data-sidenav-size=condensed] .side-nav .collapse > .sub-menu { max-height: calc(100vh - 100px); overflow-y: auto; }
