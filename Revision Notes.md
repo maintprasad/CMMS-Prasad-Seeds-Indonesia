@@ -361,3 +361,19 @@ Permintaan: menu laporan di keempat modul dihapus; semua fungsi laporan dipusatk
 - Semua halaman yang dipindah terbuka tanpa error dan menandai menu Report sebagai aktif; menu modul kini hanya berisi fungsi kerja.
 
 **Nomor versi terbaru:** 1.5
+
+## 2026-10-21 (3)
+
+**Version:** 1.5.1
+
+**Penyebab revisi:**
+Pemindahan menu laporan ke grup Report (v1.5) membuat menu Work Order dan Preventive Maintenance nyaris kosong; pengguna meminta dikembalikan.
+
+**Metode revisi:**
+- Menu WO (in / out, Equip. History, MTTR / MTBF, Reports, Rating Teknisi) dan PM (Resume Laporan) dikembalikan ke modulnya, termasuk halaman WO · Reports (daftar WO + CSV). Admin Panel WO tetap dihapus.
+- Hanya **MW · Monthly Report** yang tetap berada di grup Report (selain Generate Report).
+
+**Hasil revisi:**
+- Semua halaman terbuka tanpa error dan menandai menu yang benar sebagai aktif.
+
+**Nomor versi terbaru:** 1.5.1
